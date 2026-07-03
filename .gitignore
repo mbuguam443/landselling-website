@@ -23,7 +23,6 @@ node_modules/
 
 # Django
 staticfiles/
-media/
 
 # OS
 Thumbs.db
