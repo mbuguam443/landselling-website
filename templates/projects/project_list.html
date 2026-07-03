@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block title %}Our Projects - Prime Lands Ltd{% endblock %}
+
+{% block content %}
+<div class="pt-24 pb-12 px-4">
+    <div class="absolute inset-0" style="background: linear-gradient(135deg, #0a0015, #1a0a2e, #0a0015);"></div>
+    <div class="relative z-10 max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold" style="color: #00ff99; text-shadow: 0 0 20px rgba(0, 255, 153, 0.8);">Our Projects</h1>
+            {% include 'components/filter_bar.html' %}
+            <p class="text-lg mt-4" style="color: #b0b0d0;">Explore our land development projects</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for project in page_obj %}
+            <a href="{% url 'projects:project_detail' project.slug %}" class="glassmorphism rounded-xl overflow-hidden glow-border hover:neon-glow transition group">
+                {% if project.image %}
+                <div class="h-48 overflow-hidden">
+                    <img src="{{ project.image.url }}" alt="{{ project.name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                </div>
+                {% else %}
+                <div class="h-48 flex items-center justify-center" style="background: #1a0a2e;">
+                    <svg class="w-12 h-12" style="color: #4a4a6a;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                </div>
+                {% endif %}
+                <div class="p-5">
+                    <span class="text-xs font-semibold px-2 py-1 rounded-full" style="background: rgba(0, 255, 153, 0.15); color: #00ff99;">{{ project.get_status_display }}</span>
+                    <h3 class="text-xl font-semibold text-white mt-2">{{ project.name }}</h3>
+                    <p class="text-sm mt-1" style="color: #94a3b8;">{{ project.location }}</p>
+                    <p class="text-sm mt-2" style="color: #00ffff;">{{ project.total_plots }} total plots</p>
+                    <p class="text-sm mt-2" style="color: #4a4a6a;">{{ project.description|truncatewords:20 }}</p>
+                </div>
+            </a>
+            {% empty %}
+            <div class="col-span-3 text-center py-12">
+                <p class="text-lg" style="color: #4a4a6a;">No projects available at the moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+    {% include 'components/pagination.html' %}
+    </div>
+</div>
+{% endblock %}

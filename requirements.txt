@@ -1,0 +1,13 @@
+Django>=5.0,<6.0
+django-crispy-forms
+crispy-tailwind
+django-filter
+Pillow
+reportlab
+openpyxl
+xhtml2pdf
+python-dateutil
+gunicorn
+whitenoise
+psycopg2-binary
+django-cors-headers

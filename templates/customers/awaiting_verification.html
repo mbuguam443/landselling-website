@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Awaiting Verification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        neon: { green: '#00ff99', cyan: '#00ffff', magenta: '#ff00ff' },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: #0a0a1a;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        .glow-card {
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 0 40px rgba(0,255,153,0.05);
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="glow-card rounded-2xl p-8 md:p-12 max-w-md w-full text-center">
+        <div class="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center pulse" style="background: rgba(255,0,255,0.1); border: 2px solid rgba(255,0,255,0.3);">
+            <svg class="w-10 h-10" style="color: #ff00ff;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0 0v2m0-2h2m-2 0H10m9.364-7.364A9 9 0 1112 3a9 9 0 017.364 4.636z"/>
+            </svg>
+        </div>
+        <h1 class="text-2xl font-bold mb-2" style="color: #ff00ff;">Awaiting Verification</h1>
+        <p class="mb-6" style="color: #8888aa;">Your account is pending admin verification. You'll get full access once an admin reviews and approves your profile. This usually takes less than 24 hours.</p>
+        <p class="text-sm mb-8" style="color: #666688;">Need to update your details?<br>
+            <a href="{% url 'customers:customer_profile' %}" style="color: #00ffff;" class="hover:underline">Edit Profile</a>
+        </p>
+        <a href="{% url 'accounts:logout' %}" class="inline-block px-6 py-2.5 rounded-lg text-sm font-medium transition-all duration-200" style="background: rgba(255,255,255,0.05); color: #8888aa; border: 1px solid rgba(255,255,255,0.1);" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+            Sign Out
+        </a>
+    </div>
+</body>
+</html>

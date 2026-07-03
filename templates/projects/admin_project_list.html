@@ -1,0 +1,45 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block page_title %}Projects{% endblock %}
+
+{% block content %}
+<div class="glassmorphism rounded-xl p-6 glow-border">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-lg font-semibold text-white">All Projects</h3>
+        {% include 'components/filter_bar.html' %}
+        <a href="{% url 'projects:project_create' %}" class="btn-primary text-sm py-2">Add Project</a>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b text-left" style="border-color: #2a1a4a;">
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=name&order={% if sort_field == 'name' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Name {% if sort_field == 'name' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=location&order={% if sort_field == 'location' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Location {% if sort_field == 'location' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=status&order={% if sort_field == 'status' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Status {% if sort_field == 'status' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=total_plots&order={% if sort_field == 'total_plots' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Total Plots {% if sort_field == 'total_plots' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in page_obj %}
+                <tr class="border-b" style="border-color: #2a1a4a;">
+                    <td class="py-3"><a href="{% url 'projects:project_detail' project.slug %}" class="text-white hover:text-primary transition">{{ project.name }}</a></td>
+                    <td class="py-3" style="color: #94a3b8;">{{ project.location }}</td>
+                    <td class="py-3"><span class="text-xs font-semibold px-2 py-1 rounded-full" style="background: rgba(0, 255, 153, 0.15); color: #00ff99;">{{ project.get_status_display }}</span></td>
+                    <td class="py-3" style="color: #94a3b8;">{{ project.total_plots }}</td>
+                    <td class="py-3 flex gap-2">
+                        <a href="{% url 'projects:project_edit' project.slug %}" class="text-sm" style="color: #00ffff;">Edit</a>
+                        <a href="{% url 'projects:project_delete' project.slug %}" class="text-sm" style="color: #ff1744;">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="py-6 text-center" style="color: #4a4a6a;">No projects found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include 'components/pagination.html' %}
+</div>
+{% endblock %}

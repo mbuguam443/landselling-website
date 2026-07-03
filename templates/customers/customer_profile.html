@@ -1,0 +1,125 @@
+{% extends 'base_customer.html' %}
+{% load static %}
+
+{% block page_title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="glassmorphism rounded-2xl p-6 md:p-8 mb-6">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-2xl font-bold text-white">Complete Your Profile</h1>
+                <p class="text-sm mt-1" style="color: #94a3b8;">Fill in your details to proceed with purchases</p>
+            </div>
+            {% if customer.is_verified %}
+            <span class="text-xs px-3 py-1 rounded-full font-medium" style="background: rgba(0,255,153,0.15); color: #00ff99;">Verified</span>
+            {% else %}
+            <span class="text-xs px-3 py-1 rounded-full font-medium" style="background: rgba(255,193,7,0.15); color: #ffc107;">Pending Verification</span>
+            {% endif %}
+        </div>
+
+        <div class="flex items-center gap-4 mb-6 p-4 rounded-xl" style="background: rgba(0,0,0,0.2);">
+            <div class="w-16 h-16 rounded-full overflow-hidden" style="background: linear-gradient(135deg, #00ff99, #00ffff);">
+                {% if customer.passport_photo %}
+                <img src="{{ customer.passport_photo.url }}" class="w-full h-full object-cover">
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center">
+                    <span class="text-xl font-bold" style="color: #0a0015;">{{ request.user.first_name|first|default:request.user.username|first|upper }}</span>
+                </div>
+                {% endif %}
+            </div>
+            <div>
+                <p class="text-white font-semibold text-lg">{{ request.user.get_full_name|default:request.user.username }}</p>
+                <p class="text-sm" style="color: #94a3b8;">{{ request.user.email }}</p>
+            </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+
+            <div>
+                <p class="text-xs uppercase tracking-widest mb-3" style="color: #4a4a6a;">Personal Information</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">National ID</label>
+                        {{ form.national_id }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">Phone</label>
+                        {{ form.phone }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">Alternate Phone</label>
+                        {{ form.alternate_phone }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">City</label>
+                        {{ form.city }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">Postal Code</label>
+                        {{ form.postal_code }}
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">Address</label>
+                    {{ form.address }}
+                </div>
+            </div>
+
+            <hr style="border-color: rgba(255,255,255,0.05);">
+
+            <div>
+                <p class="text-xs uppercase tracking-widest mb-3" style="color: #4a4a6a;">Documents</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">Passport Photo</label>
+                        <div class="relative">
+                            {{ form.passport_photo }}
+                        </div>
+                        {% if customer.passport_photo %}
+                        <p class="text-xs mt-1" style="color: #00ff99;">Uploaded</p>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">ID Front</label>
+                        {{ form.id_front }}
+                        {% if customer.id_front %}
+                        <p class="text-xs mt-1" style="color: #00ff99;">Uploaded</p>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">ID Back</label>
+                        {{ form.id_back }}
+                        {% if customer.id_back %}
+                        <p class="text-xs mt-1" style="color: #00ff99;">Uploaded</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <hr style="border-color: rgba(255,255,255,0.05);">
+
+            <div>
+                <p class="text-xs uppercase tracking-widest mb-3" style="color: #4a4a6a;">Emergency Contact</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">Name</label>
+                        {{ form.emergency_contact_name }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">Phone</label>
+                        {{ form.emergency_contact_phone }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">Relation</label>
+                        {{ form.emergency_contact_relation }}
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary w-full py-3 text-center">Save Profile</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

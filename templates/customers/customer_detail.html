@@ -1,0 +1,141 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block page_title %}Customer Details{% endblock %}
+
+{% block breadcrumbs %}
+<nav class="flex mb-6" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 md:space-x-3 text-sm">
+        <li class="inline-flex items-center"><a href="{% url 'dashboard:home' %}" class="text-gray-400 hover:text-white">Dashboard</a></li>
+        <li><span class="mx-2 text-gray-500">/</span></li>
+        <li><a href="{% url 'customers:customer_list' %}" class="text-gray-400 hover:text-white">Customers</a></li>
+        <li><span class="mx-2 text-gray-500">/</span></li>
+        <li class="text-[#00ff99]">{{ customer.name }}</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+
+    <div class="glassmorphism rounded-xl p-6 glow-border">
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 rounded-full overflow-hidden" style="background: linear-gradient(135deg, #00ff99, #00ffff);">
+                    {% if customer.passport_photo %}
+                    <img src="{{ customer.passport_photo.url }}" class="w-full h-full object-cover">
+                    {% else %}
+                    <div class="w-full h-full flex items-center justify-center">
+                        <span class="text-xl font-bold" style="color: #0a0015;">{{ customer.name|first|upper }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-white">{{ customer.name }}</h3>
+                    <p class="text-sm" style="color: #94a3b8;">{{ customer.email }}</p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                {% if customer.is_verified %}
+                <span class="text-xs px-3 py-1 rounded-full font-medium" style="background: rgba(0,255,153,0.15); color: #00ff99;">Verified</span>
+                {% else %}
+                <span class="text-xs px-3 py-1 rounded-full font-medium" style="background: rgba(255,193,7,0.15); color: #ffc107;">Unverified</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-5 rounded-2xl" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.04);">
+            <div>
+                <p class="text-xs uppercase tracking-widest mb-1" style="color: #4a4a6a;">Phone</p>
+                <p class="text-white font-semibold">{{ customer.phone|default:'—' }}</p>
+            </div>
+            <div>
+                <p class="text-xs uppercase tracking-widest mb-1" style="color: #4a4a6a;">Alternate Phone</p>
+                <p class="text-white font-semibold">{{ customer.alternate_phone|default:'—' }}</p>
+            </div>
+            <div>
+                <p class="text-xs uppercase tracking-widest mb-1" style="color: #4a4a6a;">National ID</p>
+                <p class="text-white font-semibold">{{ customer.national_id|default:'—' }}</p>
+            </div>
+            <div>
+                <p class="text-xs uppercase tracking-widest mb-1" style="color: #4a4a6a;">City</p>
+                <p class="text-white font-semibold">{{ customer.city|default:'—' }}</p>
+            </div>
+            <div>
+                <p class="text-xs uppercase tracking-widest mb-1" style="color: #4a4a6a;">Postal Code</p>
+                <p class="text-white font-semibold">{{ customer.postal_code|default:'—' }}</p>
+            </div>
+            <div>
+                <p class="text-xs uppercase tracking-widest mb-1" style="color: #4a4a6a;">Joined</p>
+                <p class="text-white font-semibold">{{ customer.created_at|date:"d M Y" }}</p>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <p class="text-xs uppercase tracking-widest mb-1" style="color: #4a4a6a;">Address</p>
+            <p class="text-white">{{ customer.address|default:'—' }}</p>
+        </div>
+
+        {% if customer.passport_photo or customer.id_front or customer.id_back %}
+        <div class="mt-6">
+            <p class="text-xs uppercase tracking-widest mb-3" style="color: #4a4a6a;">Documents</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {% if customer.passport_photo %}
+                <div>
+                    <p class="text-xs mb-1" style="color: #94a3b8;">Passport Photo</p>
+                    <a href="{{ customer.passport_photo.url }}" target="_blank">
+                        <img src="{{ customer.passport_photo.url }}" class="rounded-lg w-full h-32 object-cover" style="border: 1px solid rgba(255,255,255,0.05);">
+                    </a>
+                    <a href="{{ customer.passport_photo.url }}" download class="text-xs mt-1 inline-block" style="color: #00ffff;">Download</a>
+                </div>
+                {% endif %}
+                {% if customer.id_front %}
+                <div>
+                    <p class="text-xs mb-1" style="color: #94a3b8;">ID Front</p>
+                    <a href="{{ customer.id_front.url }}" target="_blank">
+                        <img src="{{ customer.id_front.url }}" class="rounded-lg w-full h-32 object-cover" style="border: 1px solid rgba(255,255,255,0.05);">
+                    </a>
+                    <a href="{{ customer.id_front.url }}" download class="text-xs mt-1 inline-block" style="color: #00ffff;">Download</a>
+                </div>
+                {% endif %}
+                {% if customer.id_back %}
+                <div>
+                    <p class="text-xs mb-1" style="color: #94a3b8;">ID Back</p>
+                    <a href="{{ customer.id_back.url }}" target="_blank">
+                        <img src="{{ customer.id_back.url }}" class="rounded-lg w-full h-32 object-cover" style="border: 1px solid rgba(255,255,255,0.05);">
+                    </a>
+                    <a href="{{ customer.id_back.url }}" download class="text-xs mt-1 inline-block" style="color: #00ffff;">Download</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if customer.emergency_contact_name %}
+        <div class="mt-6 p-4 rounded-xl" style="background: rgba(255,193,7,0.05); border: 1px solid rgba(255,193,7,0.1);">
+            <p class="text-xs uppercase tracking-widest mb-2" style="color: #4a4a6a;">Emergency Contact</p>
+            <p class="text-white font-medium">{{ customer.emergency_contact_name }}</p>
+            <p class="text-sm" style="color: #94a3b8;">{{ customer.emergency_contact_phone }} {% if customer.emergency_contact_relation %}· {{ customer.emergency_contact_relation }}{% endif %}</p>
+        </div>
+        {% endif %}
+
+        {% if customer.notes %}
+        <div class="mt-4">
+            <p class="text-xs uppercase tracking-widest mb-1" style="color: #4a4a6a;">Notes</p>
+            <p class="text-white text-sm">{{ customer.notes }}</p>
+        </div>
+        {% endif %}
+
+        <div class="mt-6 flex flex-wrap gap-3">
+            <a href="{% url 'customers:customer_edit' customer.id %}" class="btn-primary text-sm py-2">Edit Customer</a>
+            {% if customer.is_verified %}
+            <a href="{% url 'customers:customer_unverify' customer.id %}" class="btn-secondary text-sm py-2" style="border-color: #ffc107; color: #ffc107;">Revoke Verification</a>
+            {% else %}
+            <a href="{% url 'customers:customer_verify' customer.id %}" class="btn-primary text-sm py-2" style="background: linear-gradient(to right, #ffc107, #ff9800);">Verify Customer</a>
+            {% endif %}
+            <a href="{% url 'customers:customer_list' %}" class="btn-secondary text-sm py-2">Back to List</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

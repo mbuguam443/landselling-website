@@ -1,0 +1,59 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block page_title %}Subscription Payments{% endblock %}
+
+{% block content %}
+{% include 'components/filter_bar.html' with title='Subscription Payments' %}
+<div class="glassmorphism rounded-xl overflow-hidden glow-border">
+    <table class="w-full">
+        <thead>
+            <tr style="background: rgba(255,255,255,0.05);">
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: #4a4a6a;">User</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: #4a4a6a;">Plan</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: #4a4a6a;">Amount</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: #4a4a6a;">Method</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: #4a4a6a;">Status</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: #4a4a6a;">Receipt</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: #4a4a6a;">Date</th>
+                <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider" style="color: #4a4a6a;">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y" style="border-color: #2a1a4a;">
+            {% for p in page_obj %}
+            <tr class="hover:bg-white/5 transition">
+                <td class="px-4 py-3">
+                    <p class="text-sm font-semibold text-white">{{ p.user.get_full_name_or_username }}</p>
+                    <p class="text-xs" style="color: #4a4a6a;">{{ p.user.get_role_display }}</p>
+                </td>
+                <td class="px-4 py-3 text-sm" style="color: #00ffff;">{{ p.subscription.plan.name|default:'—' }}</td>
+                <td class="px-4 py-3 text-sm" style="color: #00ff99;">KSh {{ p.amount|currency }}</td>
+                <td class="px-4 py-3 text-sm" style="color: #b0b0d0;">{{ p.get_payment_method_display }}</td>
+                <td class="px-4 py-3 text-sm">
+                    {% if p.status == 'confirmed' %}
+                    <span class="px-2 py-1 text-xs rounded-full" style="background: rgba(0,255,153,0.15); color: #00ff99;">Confirmed</span>
+                    {% elif p.status == 'pending' %}
+                    <span class="px-2 py-1 text-xs rounded-full" style="background: rgba(255,153,0,0.15); color: #ff9900;">Pending</span>
+                    {% elif p.status == 'failed' %}
+                    <span class="px-2 py-1 text-xs rounded-full" style="background: rgba(255,23,68,0.15); color: #ff1744;">Failed</span>
+                    {% else %}
+                    <span class="px-2 py-1 text-xs rounded-full" style="background: rgba(100,100,150,0.15); color: #4a4a6a;">{{ p.get_status_display }}</span>
+                    {% endif %}
+                </td>
+                <td class="px-4 py-3 text-sm" style="color: #b0b0d0;">{{ p.receipt_number|default:'—' }}</td>
+                <td class="px-4 py-3 text-sm" style="color: #b0b0d0;">{{ p.payment_date|date:'d M Y' }}</td>
+                <td class="px-4 py-3 text-sm text-right">
+                    {% if p.status == 'pending' %}
+                    <a href="{% url 'subscriptions:confirm_sub_payment' p.pk %}" class="text-sm hover:underline" style="color: #00ff99;">Confirm</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="8" class="px-4 py-8 text-center" style="color: #4a4a6a;">No subscription payments yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% include 'components/pagination.html' %}
+{% endblock %}

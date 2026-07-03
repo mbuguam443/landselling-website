@@ -1,0 +1,72 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block page_title %}Reservation Detail{% endblock %}
+
+{% block breadcrumbs %}
+<nav class="flex mb-6" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 md:space-x-3 text-sm">
+        <li><a href="{% url 'dashboard:home' %}" class="text-gray-400 hover:text-white">Dashboard</a></li>
+        <li><span class="mx-2 text-gray-500">/</span></li>
+        <li><a href="{% url 'sales:reservation_list' %}" class="text-gray-400 hover:text-white">Reservations</a></li>
+        <li><span class="mx-2 text-gray-500">/</span></li>
+        <li class="text-[#00ff99]">#{{ reservation.id }}</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="glassmorphism rounded-xl p-6 glow-border">
+        <div class="flex justify-between items-start mb-6">
+            <div>
+                <h1 class="text-2xl font-bold text-white">Reservation #{{ reservation.id }}</h1>
+                <p class="text-sm mt-1" style="color: #94a3b8;">{{ reservation.reservation_date|date:"d M Y, H:i" }}</p>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold
+            {% if reservation.status == 'active' %}" style="background: rgba(0, 255, 153, 0.15); color: #00ff99;
+            {% elif reservation.status == 'converted' %}" style="background: rgba(0, 255, 255, 0.15); color: #00ffff;
+            {% elif reservation.status == 'cancelled' %}" style="background: rgba(255, 23, 68, 0.15); color: #ff1744;
+            {% else %}" style="background: rgba(255, 255, 0, 0.15); color: #ffff00;
+            {% endif %}">{{ reservation.get_status_display }}</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+                <h3 class="text-sm font-semibold uppercase tracking-wider mb-3" style="color: #4a4a6a;">Customer</h3>
+                <p class="text-white font-medium">{{ reservation.customer.name }}</p>
+                <p class="text-sm" style="color: #94a3b8;">{{ reservation.customer.email }}</p>
+                <p class="text-sm" style="color: #94a3b8;">{{ reservation.customer.phone }}</p>
+            </div>
+            <div>
+                <h3 class="text-sm font-semibold uppercase tracking-wider mb-3" style="color: #4a4a6a;">Plot</h3>
+                <p class="text-white font-medium">{{ reservation.plot.plot_number }}</p>
+                <p class="text-sm" style="color: #94a3b8;">{{ reservation.plot.project.name }}</p>
+                <p class="text-sm" style="color: #94a3b8;">KSh {{ reservation.plot.price|currency }}</p>
+            </div>
+            <div>
+                <h3 class="text-sm font-semibold uppercase tracking-wider mb-3" style="color: #4a4a6a;">Reservation Details</h3>
+                <p class="text-sm" style="color: #94a3b8;">Amount: <span class="text-white">KSh {{ reservation.amount|currency }}</span></p>
+                <p class="text-sm" style="color: #94a3b8;">Expires: <span class="text-white">{{ reservation.expiry_date|date:"d M Y" }}</span></p>
+                <p class="text-sm" style="color: #94a3b8;">Reserved by: <span class="text-white">{{ reservation.reserved_by|default:'Customer' }}</span></p>
+            </div>
+            <div>
+                <h3 class="text-sm font-semibold uppercase tracking-wider mb-3" style="color: #4a4a6a;">Notes</h3>
+                <p class="text-sm" style="color: #94a3b8;">{{ reservation.notes|default:'No notes' }}</p>
+            </div>
+        </div>
+
+        {% if reservation.status == 'active' %}
+        <div class="flex gap-3 pt-4 border-t" style="border-color: #2a1a4a;">
+            <a href="{% url 'sales:reservation_convert' reservation.id %}" class="btn-primary text-sm py-2">
+                Convert to Sale
+            </a>
+            <a href="{% url 'sales:reservation_cancel' reservation.id %}" class="py-2 px-4 rounded-full font-semibold text-sm" style="background: #ff1744; color: white;">
+                Cancel Reservation
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block page_title %}Document Details{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="glassmorphism rounded-xl p-6 glow-border">
+        <h3 class="text-xl font-bold text-white mb-4">{{ doc.title }}</h3>
+        <div class="space-y-3">
+            <div class="flex border-b py-2" style="border-color: #2a1a4a;">
+                <span class="w-32 text-sm" style="color: #4a4a6a;">Type</span>
+                <span class="text-sm px-2 py-1 rounded-full" style="background: rgba(0, 255, 153, 0.15); color: #00ff99;">{{ doc.get_document_type_display }}</span>
+            </div>
+            <div class="flex border-b py-2" style="border-color: #2a1a4a;">
+                <span class="w-32 text-sm" style="color: #4a4a6a;">Customer</span>
+                <span class="text-white">{{ doc.customer.name }}</span>
+            </div>
+            <div class="flex border-b py-2" style="border-color: #2a1a4a;">
+                <span class="w-32 text-sm" style="color: #4a4a6a;">Uploaded By</span>
+                <span class="text-white">{{ doc.uploaded_by|default:'-' }}</span>
+            </div>
+            <div class="flex border-b py-2" style="border-color: #2a1a4a;">
+                <span class="w-32 text-sm" style="color: #4a4a6a;">Date</span>
+                <span class="text-white">{{ doc.created_at|date:'F j, Y' }}</span>
+            </div>
+            <div class="flex py-2">
+                <span class="w-32 text-sm" style="color: #4a4a6a;">Description</span>
+                <span class="text-white">{{ doc.description|default:'-' }}</span>
+            </div>
+        </div>
+        <div class="mt-6 flex gap-3">
+            <a href="{{ doc.file.url }}" target="_blank" class="btn-primary py-2">View File</a>
+            <a href="{% url 'documents:document_list' %}" class="btn-secondary py-2">Back</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

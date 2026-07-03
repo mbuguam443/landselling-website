@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Sale Agreement</title>
+<style>
+    body { font-family: Helvetica, Arial, sans-serif; font-size: 12px; color: #333; padding: 40px; }
+    h1 { text-align: center; font-size: 20px; margin-bottom: 30px; }
+    h2 { font-size: 14px; margin-top: 20px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    td, th { padding: 6px 8px; border: 1px solid #ccc; text-align: left; }
+    th { background: #f0f0f0; }
+    .signature { margin-top: 50px; }
+    .signature div { display: inline-block; width: 45%; margin-right: 5%; }
+    .signature p { border-top: 1px solid #333; padding-top: 5px; }
+</style></head>
+<body>
+    <h1>SALE AGREEMENT</h1>
+    <p style="text-align:center;">Date: {{ sale.sale_date }}</p>
+
+    <h2>Parties</h2>
+    <table>
+        <tr><td><strong>Buyer:</strong></td><td>{{ customer.name }}</td></tr>
+        <tr><td><strong>ID/Passport:</strong></td><td>{{ customer.id_number|default:'—' }}</td></tr>
+        <tr><td><strong>Phone:</strong></td><td>{{ customer.phone }}</td></tr>
+        <tr><td><strong>Email:</strong></td><td>{{ customer.email }}</td></tr>
+    </table>
+
+    <h2>Property Details</h2>
+    <table>
+        <tr><td><strong>Plot Number:</strong></td><td>{{ plot.plot_number }}</td></tr>
+        <tr><td><strong>Project:</strong></td><td>{{ plot.project.name }}</td></tr>
+        <tr><td><strong>Location:</strong></td><td>{{ plot.project.location }}</td></tr>
+        <tr><td><strong>Size:</strong></td><td>{{ plot.size_sqm }} sqm</td></tr>
+        <tr><td><strong>Price:</strong></td><td>KSh {{ sale.selling_price|floatformat:0 }}</td></tr>
+        <tr><td><strong>Deposit:</strong></td><td>KSh {{ sale.deposit_amount|floatformat:0 }}</td></tr>
+        <tr><td><strong>Balance:</strong></td><td>KSh {{ sale.balance|floatformat:0 }}</td></tr>
+        <tr><td><strong>Installment:</strong></td><td>KSh {{ sale.monthly_installment|floatformat:0 }}/mo for {{ sale.installment_months }} months</td></tr>
+    </table>
+
+    <h2>Terms</h2>
+    <p>The Buyer agrees to purchase the above-described property under the following terms and conditions:</p>
+    <ol>
+        <li>The purchase price is KSh {{ sale.selling_price|floatformat:0 }}.</li>
+        <li>A deposit of KSh {{ sale.deposit_amount|floatformat:0 }} has been paid.</li>
+        <li>The balance shall be paid in {{ sale.installment_months }} monthly installments of KSh {{ sale.monthly_installment|floatformat:0 }} each.</li>
+        <li>Title deed shall be transferred upon full payment of the purchase price.</li>
+        <li>Default in payment may result in cancellation of this agreement.</li>
+    </ol>
+
+    <div class="signature">
+        <div><p>Buyer Signature</p></div>
+        <div><p>Seller Representative</p></div>
+    </div>
+</body>
+</html>

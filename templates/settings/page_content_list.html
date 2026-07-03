@@ -1,0 +1,24 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block page_title %}Page Content{% endblock %}
+
+{% block content %}
+<div class="glassmorphism rounded-xl p-6 glow-border">
+    <h3 class="text-lg font-semibold text-white mb-6">Manage Page Content</h3>
+    <div class="space-y-3">
+        {% for page in pages %}
+        <a href="{% url 'settings:page_content_edit' page.page %}" class="flex justify-between items-center glassmorphism rounded-lg p-4 hover:bg-primary/5 transition">
+            <div>
+                <p class="text-white font-medium">{{ page.title }}</p>
+                <p class="text-xs" style="color: #4a4a6a;">Updated: {{ page.updated_at|date }}</p>
+            </div>
+            <span style="color: #00ff99;">Edit &rarr;</span>
+        </a>
+        {% empty %}
+        <p class="text-center py-6" style="color: #4a4a6a;">No page content created yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

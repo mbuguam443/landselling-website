@@ -1,0 +1,62 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block page_title %}Subscription Plans{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-white">Subscription Plans</h2>
+    <a href="{% url 'subscriptions:plan_create' %}" class="btn-primary text-sm py-2">+ New Plan</a>
+</div>
+
+<div class="glassmorphism rounded-xl overflow-hidden glow-border">
+    <table class="w-full">
+        <thead>
+            <tr style="background: rgba(255,255,255,0.05);">
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: #4a4a6a;">Name</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: #4a4a6a;">Type</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: #4a4a6a;">Price / Commission</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: #4a4a6a;">Duration</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: #4a4a6a;">Active</th>
+                <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider" style="color: #4a4a6a;">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y" style="border-color: #2a1a4a;">
+            {% for plan in page_obj %}
+            <tr class="hover:bg-white/5 transition">
+                <td class="px-4 py-3 text-sm font-medium text-white">{{ plan.name }}</td>
+                <td class="px-4 py-3 text-sm">
+                    {% if plan.plan_type == 'percentage' %}
+                    <span class="px-2 py-1 text-xs rounded-full" style="background: rgba(255,0,255,0.15); color: #ff00ff;">% of Sale</span>
+                    {% else %}
+                    <span class="px-2 py-1 text-xs rounded-full" style="background: rgba(0,255,255,0.15); color: #00ffff;">Fixed</span>
+                    {% endif %}
+                </td>
+                <td class="px-4 py-3 text-sm" style="color: #00ff99;">
+                    {% if plan.plan_type == 'percentage' %}
+                    {{ plan.commission_percentage }}% per sale
+                    {% else %}
+                    KSh {{ plan.price|currency }}/month
+                    {% endif %}
+                </td>
+                <td class="px-4 py-3 text-sm" style="color: #b0b0d0;">{{ plan.duration_days }} days</td>
+                <td class="px-4 py-3 text-sm">
+                    {% if plan.is_active %}
+                    <span class="px-2 py-1 text-xs rounded-full" style="background: rgba(0,255,153,0.15); color: #00ff99;">Active</span>
+                    {% else %}
+                    <span class="px-2 py-1 text-xs rounded-full" style="background: rgba(255,23,68,0.15); color: #ff1744;">Inactive</span>
+                    {% endif %}
+                </td>
+                <td class="px-4 py-3 text-sm text-right">
+                    <a href="{% url 'subscriptions:plan_edit' plan.pk %}" class="text-sm hover:underline" style="color: #00ffff;">Edit</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="px-4 py-8 text-center" style="color: #4a4a6a;">No plans yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% include 'components/pagination.html' %}
+{% endblock %}

@@ -1,0 +1,22 @@
+<section class="relative py-20 px-4" style="background: rgba(0, 255, 153, 0.05);">
+    <div class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="glassmorphism rounded-xl p-6 text-center glow-border hover:neon-glow transition">
+                <div class="text-3xl font-bold" style="color: #00ff99;">{{ stats.projects|default:'0' }}+</div>
+                <div class="text-sm mt-2" style="color: #b0b0d0;">Projects</div>
+            </div>
+            <div class="glassmorphism rounded-xl p-6 text-center glow-border-cyan hover:neon-glow-cyan transition">
+                <div class="text-3xl font-bold" style="color: #00ffff;">{{ stats.plots|default:'0' }}+</div>
+                <div class="text-sm mt-2" style="color: #b0b0d0;">Plots Available</div>
+            </div>
+            <div class="glassmorphism rounded-xl p-6 text-center" style="border-color: #ff00ff; box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);">
+                <div class="text-3xl font-bold" style="color: #ff00ff;">{{ stats.sold|default:'0' }}+</div>
+                <div class="text-sm mt-2" style="color: #b0b0d0;">Plots Sold</div>
+            </div>
+            <div class="glassmorphism rounded-xl p-6 text-center glow-border hover:neon-glow transition">
+                <div class="text-3xl font-bold" style="color: #00ff99;">{{ stats.customers|default:'0' }}+</div>
+                <div class="text-sm mt-2" style="color: #b0b0d0;">Happy Clients</div>
+            </div>
+        </div>
+    </div>
+</section>

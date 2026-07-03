@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Receipt {{ payment.receipt_number }}</title>
+    <style>
+        @page { margin: 15mm 12mm; }
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1a1a2e; margin: 0; padding: 0; font-size: 10px; line-height: 1.5; }
+        .header { text-align: center; padding-bottom: 15px; border-bottom: 3px solid #00ff99; margin-bottom: 20px; }
+        .header .logo svg { display: block; margin: 0 auto 10px; }
+        .header h1 { font-size: 20px; color: #1a1a2e; margin: 0 0 2px; letter-spacing: 1px; text-transform: uppercase; }
+        .header .tagline { font-size: 9px; color: #00ff99; margin: 0 0 8px; letter-spacing: 2px; text-transform: uppercase; }
+        .header .contact { font-size: 8px; color: #888; margin: 0; }
+        .header .contact span { margin: 0 8px; }
+        .title { text-align: center; margin-bottom: 20px; }
+        .title h2 { font-size: 16px; color: #1a1a2e; margin: 0; letter-spacing: 3px; text-transform: uppercase; }
+        .title .ref { font-size: 18px; color: #00ff99; font-weight: bold; margin: 5px 0 0; letter-spacing: 1px; }
+        .info-table { width: 100%; margin-bottom: 20px; border-collapse: collapse; }
+        .info-table td { padding: 4px 8px; font-size: 9px; }
+        .info-table .label { color: #888; width: 120px; }
+        .info-table .value { color: #1a1a2e; font-weight: bold; }
+        .divider { border: none; border-top: 1px dashed #ddd; margin: 15px 0; }
+        .items { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        .items th { background: #1a1a2e; color: #fff; padding: 8px 10px; text-align: left; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; }
+        .items th.right { text-align: right; }
+        .items td { padding: 8px 10px; border-bottom: 1px solid #eee; font-size: 9px; }
+        .items td.right { text-align: right; }
+        .items tr:last-child td { border-bottom: 2px solid #00ff99; }
+        .total-row { margin-top: 10px; text-align: right; }
+        .total-row .total-label { font-size: 10px; color: #888; }
+        .total-row .total-amount { font-size: 20px; font-weight: bold; color: #1a1a2e; }
+        .summary-box { margin: 20px 0; padding: 12px; background: #f8f9fa; border-left: 4px solid #00ff99; }
+        .summary-box p { margin: 3px 0; font-size: 9px; color: #555; }
+        .summary-box .label { color: #888; }
+        .summary-box .big { font-size: 12px; font-weight: bold; color: #1a1a2e; }
+        .footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid #ddd; font-size: 7px; color: #aaa; text-align: center; }
+        .badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 8px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .badge-success { background: #d4edda; color: #155724; }
+        .watermark { position: fixed; top: 40%; left: 0; right: 0; text-align: center; font-size: 60px; color: rgba(0, 255, 153, 0.04); font-weight: bold; transform: rotate(-20deg); pointer-events: none; z-index: -1; letter-spacing: 10px; }
+    </style>
+</head>
+<body>
+    <div class="watermark">PAID</div>
+
+    <div class="header">
+        <div class="logo">
+            <svg width="60" height="60" viewBox="0 0 60 60">
+                <rect width="60" height="60" rx="12" fill="#1a1a2e"/>
+                <path d="M30 10 L48 26 L44 30 L30 18 L16 30 L12 26 Z" fill="#00ff99"/>
+                <path d="M16 30 L16 42 L30 50 L44 42 L44 30" fill="none" stroke="#00ff99" stroke-width="2"/>
+                <rect x="26" y="34" width="8" height="12" rx="1" fill="#00ff99"/>
+            </svg>
+        </div>
+        <h1>{{ company_name }}</h1>
+        <p class="tagline">{{ company_tagline|default:'Your Trusted Real Estate Partner' }}</p>
+        <p class="contact">
+            <span>&#9742; {{ company_phone|default:'+254 700 000 000' }}</span>
+            <span>&#9993; {{ company_email|default:'info@primelands.com' }}</span>
+            <span>&#9873; {{ company_address|default:'99 Westlands Rd, Nairobi' }}</span>
+        </p>
+    </div>
+
+    <div class="title">
+        <h2>Official Receipt</h2>
+        <p class="ref">{{ payment.receipt_number }}</p>
+    </div>
+
+    <hr class="divider">
+
+    <table class="info-table">
+        <tr><td class="label">Date</td><td class="value">{{ payment.payment_date|date:"d M Y" }}</td></tr>
+        <tr><td class="label">Customer</td><td class="value">{{ payment.customer.name }}</td></tr>
+        <tr><td class="label">Plot No.</td><td class="value">{{ payment.sale.plot.plot_number }} — {{ payment.sale.plot.project.name }}</td></tr>
+        <tr><td class="label">Payment Method</td><td class="value">{{ payment.get_payment_method_display|upper }}</td></tr>
+        {% if payment.transaction_code %}
+        <tr><td class="label">Transaction Ref</td><td class="value">{{ payment.transaction_code }}</td></tr>
+        {% endif %}
+        <tr><td class="label">Status</td><td class="value"><span class="badge badge-success">{{ payment.get_status_display|upper }}</span></td></tr>
+        <tr><td class="label">Receipt No.</td><td class="value">{{ payment.receipt_number }}</td></tr>
+    </table>
+
+    <table class="items">
+        <thead><tr>
+            <th>Description</th>
+            <th class="right">Amount ({{ currency|default:'KSh' }})</th>
+        </tr></thead>
+        <tbody>
+            <tr>
+                <td>Land Payment — {{ payment.sale.plot.plot_number }}</td>
+                <td class="right">{{ payment.amount|floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="total-row">
+        <p class="total-label">Total Paid</p>
+        <p class="total-amount">{{ currency|default:'KSh' }} {{ payment.amount|floatformat:2 }}</p>
+    </div>
+
+    <div class="summary-box">
+        <p><span class="label">Selling Price:</span> {{ currency|default:'KSh' }} {{ payment.sale.selling_price|floatformat:2 }}</p>
+        <p><span class="label">Total Paid to Date:</span> {{ currency|default:'KSh' }} {{ payment.sale.total_paid|floatformat:2 }}</p>
+        <p><span class="big">{{ currency|default:'KSh' }} {{ payment.sale.balance|floatformat:2 }}</span> <span class="label">Remaining Balance</span></p>
+    </div>
+
+    <hr class="divider">
+
+    <div class="footer">
+        <p>This is a computer-generated receipt. No signature required.</p>
+        <p>{{ company_name }} &copy; {% now 'Y' %}. All rights reserved.</p>
+        <p>Thank you for your payment!</p>
+    </div>
+</body>
+</html>

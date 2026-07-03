@@ -1,0 +1,50 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block page_title %}User Management{% endblock %}
+
+{% block content %}
+<div class="glassmorphism rounded-xl p-6 glow-border">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-lg font-semibold text-white">All Users</h3>
+        <a href="{% url 'accounts:user_create' %}" class="btn-primary text-sm py-2">+ New User</a>
+        {% include 'components/filter_bar.html' %}
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b text-left" style="border-color: #2a1a4a;">
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=username&order={% if sort_field == 'username' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">User {% if sort_field == 'username' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=email&order={% if sort_field == 'email' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Email {% if sort_field == 'email' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=role&order={% if sort_field == 'role' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Role {% if sort_field == 'role' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=is_active&order={% if sort_field == 'is_active' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Status {% if sort_field == 'is_active' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=date_joined&order={% if sort_field == 'date_joined' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Joined {% if sort_field == 'date_joined' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in page_obj %}
+                <tr class="border-b" style="border-color: #2a1a4a;">
+                    <td class="py-3">
+                        <a href="{% url 'accounts:user_detail' u.id %}" class="text-white hover:text-primary transition">{{ u.get_full_name|default:u.username }}</a>
+                    </td>
+                    <td class="py-3" style="color: #94a3b8;">{{ u.email }}</td>
+                    <td class="py-3">
+                        <span class="text-xs font-semibold px-2 py-1 rounded-full" style="background: rgba(0, 255, 153, 0.15); color: #00ff99;">{{ u.get_role_display }}</span>
+                    </td>
+                    <td class="py-3">
+                        {% if u.is_active %}
+                        <span style="color: #00ff99;">Active</span>
+                        {% else %}
+                        <span style="color: #ff1744;">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3" style="color: #4a4a6a;">{{ u.date_joined|date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include 'components/pagination.html' %}
+</div>
+{% endblock %}

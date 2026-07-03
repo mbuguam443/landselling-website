@@ -1,0 +1,50 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block page_title %}Contact Inquiries{% endblock %}
+
+{% block content %}
+<div class="glassmorphism rounded-xl p-6 glow-border">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+        <div>
+            <h3 class="text-lg font-semibold text-white">Contact Inquiries</h3>
+            {% include 'components/filter_bar.html' %}
+        </div>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b text-left" style="border-color: #2a1a4a;">
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=name&order={% if sort_field == 'name' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Name {% if sort_field == 'name' %}<span>{% if sort_order == 'asc' %}&#9650;{% else %}&#9660;{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=email&order={% if sort_field == 'email' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Email {% if sort_field == 'email' %}<span>{% if sort_order == 'asc' %}&#9650;{% else %}&#9660;{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=subject&order={% if sort_field == 'subject' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Subject {% if sort_field == 'subject' %}<span>{% if sort_order == 'asc' %}&#9650;{% else %}&#9660;{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white">Message</th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=is_read&order={% if sort_field == 'is_read' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Status {% if sort_field == 'is_read' %}<span>{% if sort_order == 'asc' %}&#9650;{% else %}&#9660;{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=created_at&order={% if sort_field == 'created_at' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Date {% if sort_field == 'created_at' %}<span>{% if sort_order == 'asc' %}&#9650;{% else %}&#9660;{% endif %}</span>{% endif %}</a></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for msg in page_obj %}
+                <tr class="border-b" style="border-color: #2a1a4a;{% if not msg.is_read %} background: rgba(0,255,153,0.02);{% endif %}">
+                    <td class="py-3"><span class="text-white font-medium{% if not msg.is_read %} font-semibold{% endif %}">{{ msg.name }}</span></td>
+                    <td class="py-3" style="color: #94a3b8;">{{ msg.email }}</td>
+                    <td class="py-3" style="color: #94a3b8;">{{ msg.subject }}</td>
+                    <td class="py-3" style="color: #94a3b8; max-width: 250px;"><span class="truncate block">{{ msg.message|truncatewords:15 }}</span></td>
+                    <td class="py-3">
+                        {% if msg.is_read %}
+                        <span class="text-xs px-2 py-1 rounded-full" style="background: rgba(0, 255, 153, 0.1); color: #00ff99;">Read</span>
+                        {% else %}
+                        <span class="text-xs px-2 py-1 rounded-full" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">New</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3" style="color: #4a4a6a;">{{ msg.created_at|date:'M d, Y H:i' }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="py-6 text-center" style="color: #4a4a6a;">No inquiries yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include 'components/pagination.html' %}
+</div>
+{% endblock %}

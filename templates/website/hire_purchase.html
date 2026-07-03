@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block title %}Hire Purchase - Prime Lands Ltd{% endblock %}
+
+{% block content %}
+<div class="pt-24 pb-12 px-4">
+    <div class="absolute inset-0" style="background: linear-gradient(135deg, #0a0015, #1a0a2e, #0a0015);"></div>
+    <div class="relative z-10 max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold" style="color: #00ff99; text-shadow: 0 0 20px rgba(0, 255, 153, 0.8);">Hire Purchase Plan</h1>
+            <p class="text-lg mt-4 max-w-3xl mx-auto" style="color: #b0b0d0;">Own your dream land with affordable monthly installments</p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <div class="glassmorphism rounded-2xl p-8 glow-border">
+                <h2 class="text-2xl font-bold text-white mb-6">How It Works</h2>
+                <div class="space-y-6">
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background: rgba(0, 255, 153, 0.15);">
+                            <span class="font-bold" style="color: #00ff99;">1</span>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-semibold">Choose Your Plot</h3>
+                            <p class="text-sm mt-1" style="color: #94a3b8;">Browse our available plots and select the one that suits your needs.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background: rgba(0, 255, 255, 0.15);">
+                            <span class="font-bold" style="color: #00ffff;">2</span>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-semibold">Pay Deposit</h3>
+                            <p class="text-sm mt-1" style="color: #94a3b8;">Pay a deposit of just 20% of the total price to secure your plot.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background: rgba(255, 0, 255, 0.15);">
+                            <span class="font-bold" style="color: #ff00ff;">3</span>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-semibold">Monthly Installments</h3>
+                            <p class="text-sm mt-1" style="color: #94a3b8;">Pay the balance in comfortable monthly installments over up to 60 months.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background: rgba(0, 255, 153, 0.15);">
+                            <span class="font-bold" style="color: #00ff99;">4</span>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-semibold">Get Your Title Deed</h3>
+                            <p class="text-sm mt-1" style="color: #94a3b8;">Upon completion of payments, receive your guaranteed title deed.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glassmorphism rounded-2xl p-8" style="border-color: #00ffff;">
+                <h2 class="text-2xl font-bold text-white mb-6">Why Choose Hire Purchase?</h2>
+                <div class="space-y-4">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 flex-shrink-0 mt-1" style="color: #00ff99;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <div>
+                            <p class="text-white font-medium">Affordable Payments</p>
+                            <p class="text-sm" style="color: #94a3b8;">Spread the cost over months that suit your budget.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 flex-shrink-0 mt-1" style="color: #00ff99;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <div>
+                            <p class="text-white font-medium">Zero Interest Options</p>
+                            <p class="text-sm" style="color: #94a3b8;">Interest-free installment plans available.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 flex-shrink-0 mt-1" style="color: #00ff99;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <div>
+                            <p class="text-white font-medium">Immediate Possession</p>
+                            <p class="text-sm" style="color: #94a3b8;">Start using your land while paying in installments.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 flex-shrink-0 mt-1" style="color: #00ff99;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <div>
+                            <p class="text-white font-medium">Guaranteed Title Deed</p>
+                            <p class="text-sm" style="color: #94a3b8;">Full ownership transferred upon completion.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8">
+                    <a href="{% url 'plots:plot_list' %}" class="btn-primary w-full text-center py-3 block">Browse Available Plots</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

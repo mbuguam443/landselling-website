@@ -1,0 +1,63 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+{% load humanize %}
+
+{% block page_title %}Revenue Report{% endblock %}
+
+{% block content %}
+<div class="glassmorphism rounded-xl p-6 glow-border">
+    <h3 class="text-lg font-semibold text-white mb-6">Revenue Summary</h3>
+    <div class="grid md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-xl" style="background: rgba(0, 255, 153, 0.1);">
+            <p class="text-sm" style="color: #4a4a6a;">Total Sales Revenue</p>
+            <p class="text-3xl font-bold mt-2" style="color: #00ff99;">KSh {{ total_revenue|currency }}</p>
+        </div>
+        <div class="p-6 rounded-xl" style="background: rgba(0, 255, 255, 0.1);">
+            <p class="text-sm" style="color: #4a4a6a;">Platform Commission Earned</p>
+            <p class="text-3xl font-bold mt-2" style="color: #00ffff;">KSh {{ total_commission|currency }}</p>
+        </div>
+        <div class="p-6 rounded-xl" style="background: rgba(255, 0, 255, 0.1);">
+            <p class="text-sm" style="color: #4a4a6a;">Subscription Income</p>
+            <p class="text-3xl font-bold mt-2" style="color: #ff00ff;">KSh {{ total_subscription|currency }}</p>
+        </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6 mt-8">
+        <div class="p-6 rounded-xl" style="background: rgba(255,255,255,0.03); border: 1px solid #2a1a4a;">
+            <h4 class="text-md font-semibold text-white mb-4">Commission Breakdown</h4>
+            <div class="space-y-3">
+                {% for sale in commission_sales %}
+                <div class="flex justify-between text-sm">
+                    <span style="color: #b0b0d0;">{{ sale.customer.name }} — {{ sale.plot.plot_number }}</span>
+                    <span style="color: #00ffff;">KSh {{ sale.commission_amount|currency }}</span>
+                </div>
+                {% empty %}
+                <p style="color: #4a4a6a;">No commissions yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="p-6 rounded-xl" style="background: rgba(255,255,255,0.03); border: 1px solid #2a1a4a;">
+            <h4 class="text-md font-semibold text-white mb-4">Subscription Breakdown</h4>
+            <div class="space-y-3">
+                {% for sp in sub_payments %}
+                <div class="flex justify-between text-sm">
+                    <span style="color: #b0b0d0;">{{ sp.user.get_full_name_or_username }}</span>
+                    <span style="color: #ff00ff;">KSh {{ sp.amount|currency }}</span>
+                </div>
+                {% empty %}
+                <p style="color: #4a4a6a;">No subscription payments yet.</p>
+                {% endfor %}
+            </div>
+            <div class="flex justify-between text-sm mt-4 pt-3 border-t" style="border-color: #2a1a4a;">
+                <span class="text-white font-semibold">Total Subscriptions</span>
+                <span style="color: #ff00ff; font-weight: bold;">KSh {{ total_subscription|currency }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-8">
+        <a href="{% url 'reports:export_report' 'payments' 'csv' %}" class="btn-secondary text-sm py-2">Export Sales Revenue</a>
+    </div>
+</div>
+{% endblock %}

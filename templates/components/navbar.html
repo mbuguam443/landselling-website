@@ -1,0 +1,57 @@
+{% load static %}
+{% load currency_filters %}
+<nav class="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b" style="border-color: rgba(0, 255, 153, 0.3);">
+    <div class="max-w-7xl mx-auto px-4 lg:px-0">
+        <div class="flex items-center justify-between h-20">
+            <a href="{% url 'website:home' %}" class="flex items-center gap-3 group">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg" style="background: linear-gradient(135deg, #00ff99, #00ffff); display: flex; align-items: center; justify-content: center;">
+                        <span class="text-xs font-semibold" style="color: #0a0015;">PL</span>
+                    </div>
+                    <span class="font-semibold text-white">{{ company.company_name|default:'Prime Lands' }}</span>
+                </div>
+            </a>
+
+            <div class="hidden lg:flex items-center gap-6">
+                <a href="{% url 'website:home' %}" class="text-white hover:text-primary transition">Home</a>
+                <a href="{% url 'website:about' %}" class="text-white hover:text-primary transition">About</a>
+                <a href="{% url 'projects:project_list' %}" class="text-white hover:text-primary transition">Projects</a>
+                <a href="{% url 'plots:plot_list' %}" class="text-white hover:text-primary transition">Available Plots</a>
+                <a href="{% url 'website:hire_purchase' %}" class="text-white hover:text-primary transition">Hire Purchase</a>
+                <a href="{% url 'website:contact' %}" class="text-white hover:text-primary transition">Contact</a>
+            </div>
+
+            <div class="hidden lg:flex items-center gap-4">
+                {% if user.is_authenticated %}
+                <a href="{% url 'dashboard:home' %}" class="btn-primary text-sm">Dashboard</a>
+                <a href="{% url 'accounts:logout' %}" class="text-sm text-muted-foreground hover:text-white transition">Logout</a>
+                {% else %}
+                <a href="{% url 'accounts:login' %}" class="text-sm text-muted-foreground hover:text-white transition">Login</a>
+                <a href="{% url 'accounts:register' %}" class="btn-primary text-sm">Register</a>
+                {% endif %}
+            </div>
+
+            <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="lg:hidden p-2 rounded-lg hover:bg-primary/10 text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
+        </div>
+
+        <div id="mobile-menu" class="hidden lg:hidden glassmorphism border-t border-primary/30 py-4 space-y-3 px-4 mb-4 rounded-lg">
+            <a href="{% url 'website:home' %}" class="block py-2 text-white hover:text-primary">Home</a>
+            <a href="{% url 'website:about' %}" class="block py-2 text-white hover:text-primary">About</a>
+            <a href="{% url 'projects:project_list' %}" class="block py-2 text-white hover:text-primary">Projects</a>
+            <a href="{% url 'plots:plot_list' %}" class="block py-2 text-white hover:text-primary">Available Plots</a>
+            <a href="{% url 'website:hire_purchase' %}" class="block py-2 text-white hover:text-primary">Hire Purchase</a>
+            <a href="{% url 'website:contact' %}" class="block py-2 text-white hover:text-primary">Contact</a>
+            <div class="pt-2 space-y-2">
+                {% if user.is_authenticated %}
+                <a href="{% url 'dashboard:home' %}" class="btn-primary text-sm block text-center">Dashboard</a>
+                <a href="{% url 'accounts:logout' %}" class="block py-2 text-muted-foreground hover:text-white">Logout</a>
+                {% else %}
+                <a href="{% url 'accounts:login' %}" class="block py-2 text-muted-foreground hover:text-white">Login</a>
+                <a href="{% url 'accounts:register' %}" class="btn-primary text-sm block text-center">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Completion Certificate</title>
+<style>
+    body { font-family: Helvetica, Arial, sans-serif; font-size: 12px; color: #333; padding: 40px; text-align: center; }
+    h1 { font-size: 22px; margin-bottom: 5px; }
+    .subtitle { font-size: 14px; color: #666; margin-bottom: 30px; }
+    .certificate { border: 2px solid #333; padding: 40px; margin: 20px 0; }
+    .details { text-align: left; max-width: 400px; margin: 0 auto; }
+    .details p { margin: 8px 0; }
+    .seal { margin-top: 40px; font-style: italic; color: #666; }
+</style></head>
+<body>
+    <div class="certificate">
+        <h1>CERTIFICATE OF COMPLETION</h1>
+        <p class="subtitle">This certifies that the purchase of the property described below has been fully completed.</p>
+
+        <div class="details">
+            <p><strong>Customer:</strong> {{ customer.name }}</p>
+            <p><strong>Plot Number:</strong> {{ plot.plot_number }}</p>
+            <p><strong>Project:</strong> {{ plot.project.name }}</p>
+            <p><strong>Location:</strong> {{ plot.project.location }}</p>
+            <p><strong>Total Price:</strong> KSh {{ sale.selling_price|floatformat:0 }}</p>
+            <p><strong>Completion Date:</strong> {{ sale.completion_date }}</p>
+        </div>
+
+        <p>All payments have been fulfilled. The buyer is entitled to receive the title deed and all associated ownership documents.</p>
+
+        <div class="seal">
+            <p>____________________________</p>
+            <p>Authorized Signature</p>
+            <p>{{ company_name|default:'Prime Lands Ltd' }}</p>
+        </div>
+    </div>
+</body>
+</html>

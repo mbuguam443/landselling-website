@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block title %}About Us - Prime Lands Ltd{% endblock %}
+
+{% block content %}
+<div class="pt-24 pb-12 px-4">
+    <div class="absolute inset-0" style="background: linear-gradient(135deg, #0a0015, #1a0a2e, #0a0015);"></div>
+    <div class="relative z-10 max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold" style="color: #00ff99; text-shadow: 0 0 20px rgba(0, 255, 153, 0.8);">About Us</h1>
+            <p class="text-lg mt-4 max-w-3xl mx-auto" style="color: #b0b0d0;">Your trusted partner in real estate, making land ownership accessible to everyone.</p>
+        </div>
+
+        <div class="glassmorphism rounded-2xl p-8 glow-border max-w-4xl mx-auto">
+            <div class="prose prose-invert max-w-none" style="color: #cbd5e1;">
+                {% if content %}
+                <h2 class="text-2xl font-bold text-white">{{ content.title }}</h2>
+                <div class="mt-4 leading-relaxed">{{ content.content|linebreaks }}</div>
+                {% else %}
+                <h2 class="text-2xl font-bold text-white">Prime Lands Ltd</h2>
+                <p class="mt-4 leading-relaxed">Prime Lands Ltd is a premier real estate company dedicated to providing quality land and property solutions. With years of experience in the industry, we have built a reputation for trust, transparency, and customer satisfaction.</p>
+                <p class="mt-4 leading-relaxed">Our mission is to make land ownership accessible and affordable to everyone through flexible payment plans and professional guidance throughout the purchasing process.</p>
+                <p class="mt-4 leading-relaxed">We pride ourselves on offering prime locations, guaranteed title deeds, and exceptional customer service. Whether you are looking for a place to build your dream home or a profitable investment, Prime Lands Ltd is your trusted partner.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

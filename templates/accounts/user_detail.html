@@ -1,0 +1,46 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block page_title %}User Details{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="glassmorphism rounded-xl p-6 glow-border">
+        <div class="flex items-center gap-4 mb-6">
+            <div class="w-16 h-16 rounded-full" style="background: linear-gradient(135deg, #00ff99, #00ffff); display: flex; align-items: center; justify-content: center;">
+                <span class="text-xl font-bold" style="color: #0a0015;">{{ user_obj.first_name|first|default:user_obj.username|first|upper }}</span>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-white">{{ user_obj.get_full_name|default:user_obj.username }}</h3>
+                <p class="text-sm" style="color: #94a3b8;">{{ user_obj.get_role_display }}</p>
+            </div>
+        </div>
+        <div class="space-y-3">
+            <div class="flex border-b py-2" style="border-color: #2a1a4a;">
+                <span class="w-32 text-sm" style="color: #4a4a6a;">Username</span>
+                <span class="text-white">{{ user_obj.username }}</span>
+            </div>
+            <div class="flex border-b py-2" style="border-color: #2a1a4a;">
+                <span class="w-32 text-sm" style="color: #4a4a6a;">Email</span>
+                <span class="text-white">{{ user_obj.email }}</span>
+            </div>
+            <div class="flex border-b py-2" style="border-color: #2a1a4a;">
+                <span class="w-32 text-sm" style="color: #4a4a6a;">Phone</span>
+                <span class="text-white">{{ user_obj.phone|default:'-' }}</span>
+            </div>
+            <div class="flex border-b py-2" style="border-color: #2a1a4a;">
+                <span class="w-32 text-sm" style="color: #4a4a6a;">Active</span>
+                <span class="text-white">{{ user_obj.is_active|yesno:'Yes,No' }}</span>
+            </div>
+            <div class="flex py-2">
+                <span class="w-32 text-sm" style="color: #4a4a6a;">Joined</span>
+                <span class="text-white">{{ user_obj.date_joined|date:'F j, Y' }}</span>
+            </div>
+        </div>
+        <div class="mt-6 flex gap-3">
+            <a href="{% url 'accounts:user_list' %}" class="btn-secondary text-sm py-2">Back to Users</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

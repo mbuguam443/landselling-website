@@ -1,0 +1,30 @@
+{% extends 'base_customer.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block page_title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="glassmorphism rounded-xl p-8 glow-border">
+        <h2 class="text-2xl font-bold text-white mb-6">My Profile</h2>
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            {% for field in form %}
+            <div>
+                <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                <p class="text-sm mt-1" style="color: #ff1744;">{{ field.errors.0 }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn-primary w-full py-3 text-center">Update Profile</button>
+        </form>
+        <div class="mt-6 pt-6 border-t flex justify-between" style="border-color: #2a1a4a;">
+            <a href="{% url 'accounts:password_change' %}" class="text-sm" style="color: #00ffff;">Change Password</a>
+            <a href="{% url 'accounts:logout' %}" class="text-sm" style="color: #ff1744;">Sign Out</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block title %}FAQs - Prime Lands Ltd{% endblock %}
+
+{% block content %}
+<div class="pt-24 pb-12 px-4">
+    <div class="absolute inset-0" style="background: linear-gradient(135deg, #0a0015, #1a0a2e, #0a0015);"></div>
+    <div class="relative z-10 max-w-4xl mx-auto">
+        <div class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold" style="color: #00ff99; text-shadow: 0 0 20px rgba(0, 255, 153, 0.8);">Frequently Asked Questions</h1>
+            <p class="text-lg mt-4" style="color: #b0b0d0;">Find answers to common questions</p>
+        </div>
+
+        <div class="glassmorphism rounded-2xl p-8 glow-border">
+            <div class="space-y-4">
+                <div class="border-b pb-4" style="border-color: #2a1a4a;">
+                    <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="flex justify-between items-center w-full text-left">
+                        <span class="text-white font-medium">How do I purchase a plot?</span>
+                        <svg class="w-5 h-5" style="color: #00ff99;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div class="hidden mt-3 text-sm" style="color: #94a3b8;">
+                        Browse available plots, choose your preferred plot, pay the deposit, and sign the sale agreement. Then pay the balance in installments as agreed.
+                    </div>
+                </div>
+                <div class="border-b pb-4" style="border-color: #2a1a4a;">
+                    <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="flex justify-between items-center w-full text-left">
+                        <span class="text-white font-medium">What payment methods do you accept?</span>
+                        <svg class="w-5 h-5" style="color: #00ff99;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div class="hidden mt-3 text-sm" style="color: #94a3b8;">
+                        We accept cash, bank transfers, cheques, and M-Pesa payments.
+                    </div>
+                </div>
+                <div class="border-b pb-4" style="border-color: #2a1a4a;">
+                    <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="flex justify-between items-center w-full text-left">
+                        <span class="text-white font-medium">How long does the installment plan last?</span>
+                        <svg class="w-5 h-5" style="color: #00ff99;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div class="hidden mt-3 text-sm" style="color: #94a3b8;">
+                        Installment plans range from 6 to 60 months depending on the plot and your preference.
+                    </div>
+                </div>
+                <div class="border-b pb-4" style="border-color: #2a1a4a;">
+                    <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="flex justify-between items-center w-full text-left">
+                        <span class="text-white font-medium">Do you offer title deeds?</span>
+                        <svg class="w-5 h-5" style="color: #00ff99;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div class="hidden mt-3 text-sm" style="color: #94a3b8;">
+                        Yes, all our plots come with genuine, government-issued title deeds. The deed is transferred to your name upon full payment.
+                    </div>
+                </div>
+                <div class="border-b pb-4" style="border-color: #2a1a4a;">
+                    <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="flex justify-between items-center w-full text-left">
+                        <span class="text-white font-medium">Can I visit the land before purchasing?</span>
+                        <svg class="w-5 h-5" style="color: #00ff99;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div class="hidden mt-3 text-sm" style="color: #94a3b8;">
+                        Absolutely! We encourage all clients to visit the site. Contact us to schedule a site visit.
+                    </div>
+                </div>
+                <div>
+                    <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="flex justify-between items-center w-full text-left">
+                        <span class="text-white font-medium">What happens if I default on payment?</span>
+                        <svg class="w-5 h-5" style="color: #00ff99;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div class="hidden mt-3 text-sm" style="color: #94a3b8;">
+                        We offer a grace period for late payments. If you face difficulties, please contact our customer care team to discuss a payment plan adjustment.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends 'base_customer.html' %}
+{% load static %}
+
+{% block page_title %}Processing Payment{% endblock %}
+
+{% block extra_head %}
+{% if not simulated %}
+<meta http-equiv="refresh" content="30;url={% url 'payments:mpesa_query_status' %}">
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto text-center">
+    <div class="glassmorphism rounded-xl p-8 glow-border">
+        {% if simulated %}
+        <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style="background: rgba(255, 193, 7, 0.15);">
+            <svg class="w-8 h-8" style="color: #ffc107;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+            </svg>
+        </div>
+        <h2 class="text-xl font-bold text-white mb-2">Demo Mode</h2>
+        <p style="color: #94a3b8;" class="mb-6">
+            M-Pesa sandbox detected. Click below to complete the payment.
+        </p>
+        {% else %}
+        <div class="w-16 h-16 mx-auto mb-4 relative">
+            <div class="w-16 h-16 rounded-full flex items-center justify-center" style="background: rgba(0, 255, 153, 0.15);">
+                <svg class="w-8 h-8" style="color: #00ff99;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div id="pulse-ring" class="absolute inset-0 rounded-full border-2" style="border-color: #00ff99; animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;"></div>
+        </div>
+        <h2 class="text-xl font-bold text-white mb-2">Waiting for Confirmation</h2>
+        <p style="color: #94a3b8;" class="mb-1">
+            Enter your M-Pesa PIN on the phone prompt to authorize.
+        </p>
+        <p class="text-sm mb-4" style="color: #4a4a6a;">
+            Checkout ID: {{ checkout_id|truncatechars:30 }}
+        </p>
+        <div id="auto-status" class="text-xs mb-4" style="color: #00ff99;">
+            Listening for confirmation...
+        </div>
+        {% endif %}
+
+        {% if not simulated %}
+        <form method="POST" action="{% url 'payments:mpesa_query_status' %}" class="mb-3">
+            {% csrf_token %}
+            <button type="submit" id="query-btn" class="btn-secondary w-full py-2">
+                Query M-Pesa Status
+            </button>
+        </form>
+        {% endif %}
+
+        <form method="POST" action="{% url 'payments:mpesa_complete' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-primary w-full py-3 text-lg">
+                {% if simulated %}Complete Payment{% else %}Manual Complete (Fallback){% endif %}
+            </button>
+        </form>
+
+        <div class="mt-6 p-4 rounded-lg" style="background: rgba(0, 255, 153, 0.05);">
+            <p class="text-sm text-gray-400">Amount</p>
+            <p class="text-2xl font-bold text-white">KSh {{ payment.amount|floatformat:0 }}</p>
+        </div>
+
+        <a href="{% url 'payments:payment_list' %}" class="btn-secondary inline-block mt-4">
+            My Payments
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if not simulated %}
+<script>
+(function() {
+    var pollInterval = setInterval(function() {
+        fetch('{% url 'payments:mpesa_poll_status' %}')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                var statusEl = document.getElementById('auto-status');
+                if (data.status === 'completed' || data.status === 'confirmed') {
+                    statusEl.textContent = 'Payment confirmed! Redirecting...';
+                    statusEl.style.color = '#00ff99';
+                    clearInterval(pollInterval);
+                    setTimeout(function() { window.location.href = data.redirect_url; }, 800);
+                } else if (data.status === 'failed') {
+                    statusEl.textContent = 'Payment failed or cancelled.';
+                    statusEl.style.color = '#ff00ff';
+                    clearInterval(pollInterval);
+                } else if (data.status === 'pending') {
+                    var dots = statusEl.textContent.replace(/[^.]/g, '').length;
+                    dots = (dots % 3) + 1;
+                    statusEl.textContent = 'Listening for confirmation' + '.'.repeat(dots);
+                }
+            })
+            .catch(function() {
+                var statusEl = document.getElementById('auto-status');
+                statusEl.textContent = 'Still waiting...';
+            });
+    }, 3000);
+
+    setTimeout(function() { clearInterval(pollInterval); }, 120000);
+})();
+</script>
+<style>
+@keyframes pulse-ring {
+    0% { transform: scale(0.95); opacity: 0.7; }
+    50% { transform: scale(1.1); opacity: 0.3; }
+    100% { transform: scale(0.95); opacity: 0.7; }
+}
+</style>
+{% endif %}
+{% endblock %}

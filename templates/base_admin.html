@@ -1,0 +1,172 @@
+{% load static %}
+{% load currency_filters %}
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin - Prime Lands Ltd{% endblock %}</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <style>
+        :root {
+            --background: #0a0015;
+            --foreground: #ffffff;
+            --card: #1a0a2e;
+            --primary: #00ff99;
+            --accent: #00ffff;
+            --secondary: #ff00ff;
+            --muted: #4a4a6a;
+            --border: #2a1a4a;
+        }
+
+        * {
+            border-color: var(--border);
+        }
+
+        body {
+            background: #0a0015;
+            color: white;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glassmorphism {
+            background: rgba(26, 10, 46, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 255, 153, 0.2);
+        }
+
+        .glow-border {
+            border: 1px solid #00ff99;
+        }
+
+        .neon-glow {
+            box-shadow: 0 0 30px rgba(0, 255, 153, 0.6);
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, #00ff99, #00ffff);
+            color: #0a0015;
+            font-weight: 600;
+            border-radius: 9999px;
+            padding: 0.5rem 1.5rem;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 153, 0.5);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            background: rgba(10, 0, 21, 0.5);
+            border: 2px solid #4a4a6a;
+            border-radius: 0.5rem;
+            color: white;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #00ff99;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            color: #b0b0d0;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(0, 255, 153, 0.1);
+            color: white;
+        }
+
+        .sidebar-link.active {
+            background: rgba(0, 255, 153, 0.15);
+            color: #00ff99;
+            border: 1px solid rgba(0, 255, 153, 0.3);
+        }
+    </style>
+
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+
+<div class="flex h-screen overflow-hidden">
+
+    <div id="adminSidebarOverlay"
+         onclick="toggleSidebar('adminSidebar', 'adminSidebarOverlay')"
+         class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden">
+    </div>
+
+    {% include 'components/admin_sidebar.html' %}
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+
+        {% include 'components/admin_topbar.html' %}
+
+        <main class="flex-1 overflow-y-auto p-6">
+
+            {% if messages %}
+                <div class="mb-4 space-y-2" id="toast-container">
+
+                    {% for message in messages %}
+
+                        <div class="toast-notification glassmorphism rounded-lg px-4 py-3 cursor-pointer flex items-center gap-3 text-sm"
+                             style="border-left:4px solid {% if message.tags == 'error' %}#ff1744{% elif message.tags == 'success' %}#00ff99{% elif message.tags == 'warning' %}#ff00ff{% else %}#00ffff{% endif %};">
+
+                            <span style="color:{% if message.tags == 'error' %}#ff1744{% elif message.tags == 'success' %}#00ff99{% elif message.tags == 'warning' %}#ff00ff{% else %}#00ffff{% endif %};">
+
+                                {% if message.tags == 'error' %}
+                                    &times;
+                                {% elif message.tags == 'success' %}
+                                    &check;
+                                {% elif message.tags == 'warning' %}
+                                    !
+                                {% else %}
+                                    &#9432;
+                                {% endif %}
+
+                            </span>
+
+                            <span class="flex-1">
+                                {{ message }}
+                            </span>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+            {% endif %}
+
+            {% block content %}
+            {% endblock %}
+
+        </main>
+
+    </div>
+
+</div>
+
+<script src="{% static 'js/main.js' %}"></script>
+
+{% block extra_scripts %}
+{% endblock %}
+
+</body>
+</html>

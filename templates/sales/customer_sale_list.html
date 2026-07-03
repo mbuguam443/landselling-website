@@ -1,0 +1,75 @@
+{% extends 'base_customer.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block page_title %}My Purchases{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    <div class="glassmorphism rounded-xl p-6 mb-6">
+        <h1 class="text-2xl font-bold text-white mb-2">My Purchases</h1>
+        {% include 'components/filter_bar.html' %}
+        <p style="color: #94a3b8;">All plots you have purchased</p>
+    </div>
+
+    {% if page_obj %}
+    <div class="space-y-4">
+        {% for sale in page_obj %}
+        <div class="glassmorphism rounded-xl p-5 hover:border-[#00ff99] transition-all duration-300" style="border: 1px solid rgba(255,255,255,0.06);">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold" style="background: rgba(0,255,153,0.1); color: #00ff99;">
+                        {{ sale.plot.plot_number|slice:":2"|upper }}
+                    </div>
+                    <div>
+                        <h3 class="text-white font-semibold">Plot {{ sale.plot.plot_number }}</h3>
+                        <p style="color: #94a3b8; font-size: 13px;">{{ sale.plot.project.name }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6 text-sm">
+                    <div class="text-right">
+                        <p style="color: #4a4a6a;">Price</p>
+                        <p class="text-white font-medium">KSh {{ sale.selling_price|currency }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p style="color: #4a4a6a;">Paid</p>
+                        <p style="color: #00ff99; font-weight: 600;">KSh {{ sale.total_paid|currency }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p style="color: #4a4a6a;">Status</p>
+                        {% if sale.status == 'active' %}
+                        <span style="color: #00ffff;">Active</span>
+                        {% elif sale.status == 'completed' %}
+                        <span style="color: #00ff99;">Completed</span>
+                        {% elif sale.status == 'reservation' %}
+                        <span style="color: #ffc107;">Reservation</span>
+                        {% else %}
+                        <span style="color: #ff1744;">{{ sale.get_status_display }}</span>
+                        {% endif %}
+                    </div>
+                    <a href="{% url 'payments:payment_statement' sale.id %}" class="btn-primary text-xs py-1.5 px-4" style="text-decoration: none;">
+                        Statement
+                    </a>
+                </div>
+            </div>
+            <div class="mt-3">
+                <div style="background: rgba(255,255,255,0.05); border-radius: 999px; height: 4px; overflow: hidden;">
+                    <div style="background: linear-gradient(to right, #00ff99, #00ffff); height: 4px; border-radius: 999px; width: {{ sale.progress_percent }}%;"></div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% include 'components/pagination.html' %}
+    {% else %}
+    <div class="glassmorphism rounded-xl p-12 text-center">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style="background: rgba(0,255,153,0.1);">
+            <svg class="w-8 h-8" style="color: #4a4a6a;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
+        </div>
+        <h3 class="text-lg font-semibold text-white mb-1">No Purchases Yet</h3>
+        <p style="color: #4a4a6a;" class="mb-4">Browse available plots and make your first purchase.</p>
+        <a href="{% url 'plots:plot_list' %}" class="btn-primary text-sm py-2 inline-block">Browse Plots</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+{% load humanize %}
+
+{% block page_title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="glassmorphism rounded-xl p-6 glow-border">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-lg font-semibold text-white">All Notifications</h3>
+        {% include 'components/filter_bar.html' %}
+        <a href="{% url 'notifications:mark_all_read' %}" class="btn-secondary text-sm py-2">Mark All Read</a>
+    </div>
+    <div class="space-y-3">
+        {% for notification in page_obj %}
+        <a href="{% url 'notifications:mark_read' notification.id %}" class="block glassmorphism rounded-lg p-4 hover:bg-primary/5 transition {% if not notification.is_read %}border-l-4{% endif %}" style="{% if not notification.is_read %}border-left-color: #00ff99;{% endif %}">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-sm font-medium text-white {% if not notification.is_read %}font-semibold{% endif %}">{{ notification.title }}</p>
+                    <p class="text-xs mt-1" style="color: #94a3b8;">{{ notification.message|truncatewords:20 }}</p>
+                </div>
+                <span class="text-xs" style="color: #4a4a6a;">{{ notification.created_at|timesince }} ago</span>
+            </div>
+        </a>
+        {% empty %}
+        <p class="text-center py-8" style="color: #4a4a6a;">No notifications.</p>
+        {% endfor %}
+    </div>
+    {% include 'components/pagination.html' %}
+</div>
+{% endblock %}

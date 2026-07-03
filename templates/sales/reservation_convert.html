@@ -1,0 +1,53 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block page_title %}Convert Reservation to Sale{% endblock %}
+
+{% block breadcrumbs %}
+<nav class="flex mb-6" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 md:space-x-3 text-sm">
+        <li><a href="{% url 'dashboard:home' %}" class="text-gray-400 hover:text-white">Dashboard</a></li>
+        <li><span class="mx-2 text-gray-500">/</span></li>
+        <li><a href="{% url 'sales:reservation_list' %}" class="text-gray-400 hover:text-white">Reservations</a></li>
+        <li><span class="mx-2 text-gray-500">/</span></li>
+        <li class="text-[#00ff99]">Convert</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="glassmorphism rounded-xl p-6 glow-border">
+        <h1 class="text-2xl font-bold text-white mb-2">Convert to Sale</h1>
+        <p class="text-sm mb-6" style="color: #94a3b8;">
+            Converting reservation for <strong class="text-white">{{ reservation.customer.name }}</strong>
+            on plot <strong class="text-white">{{ reservation.plot.plot_number }}</strong>
+            (KSh {{ reservation.plot.price|currency }})
+        </p>
+
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">Selling Price</label>
+                    <input type="text" readonly class="input-field w-full" value="KSh {{ reservation.plot.price|currency }}">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">Deposit Amount (KSh)</label>
+                    <input type="number" name="deposit_amount" class="input-field w-full" value="{{ default_deposit }}" required min="0" step="0.01">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">Installment Months</label>
+                    <input type="number" name="installment_months" class="input-field w-full" value="60" required min="1">
+                </div>
+            </div>
+
+            <div class="flex gap-3 pt-4">
+                <button type="submit" class="btn-primary py-2">Create Sale</button>
+                <a href="{% url 'sales:reservation_detail' reservation.id %}" class="btn-secondary py-2">Back</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

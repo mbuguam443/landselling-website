@@ -1,0 +1,67 @@
+{% extends 'base_customer.html' %}
+{% load static %}
+{% load currency_filters %}
+{% load humanize %}
+
+{% block page_title %}Pay with M-Pesa{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <h1 class="text-2xl font-bold text-white mb-6">Pay with M-Pesa</h1>
+
+    {% if not active_sales %}
+    <div class="glassmorphism rounded-xl p-8 glow-border text-center">
+        <svg class="w-16 h-16 mx-auto mb-4" style="color: #4a4a6a;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p class="text-white font-medium mb-2">No Active Purchases</p>
+        <p style="color: #94a3b8;">You don't have any active plots to make a payment for.</p>
+        <a href="{% url 'plots:plot_list' %}" class="btn-primary inline-block mt-4">Browse Plots</a>
+    </div>
+    {% else %}
+
+    <form method="POST" class="glassmorphism rounded-xl p-6 glow-border space-y-4">
+        {% csrf_token %}
+
+        <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">Select Plot / Sale</label>
+            <select name="sale_id" required class="input-field w-full">
+                <option value="">-- Select --</option>
+                {% for sale in active_sales %}
+                <option value="{{ sale.id }}">
+                    {{ sale.plot.plot_number }} — {{ sale.plot.project.name }} (Balance: KSh {{ sale.balance|currency }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">Amount (KSh)</label>
+            <input type="number" name="amount" id="amount" required min="1" step="0.01" class="input-field w-full" placeholder="e.g. 50000">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">M-Pesa Phone Number</label>
+            <input type="tel" name="phone" required class="input-field w-full" placeholder="e.g. 0712345678" value="{{ customer.phone }}">
+            <p class="text-xs text-gray-500 mt-1">Format: 0712345678 or 254712345678</p>
+        </div>
+
+        <button type="submit" class="btn-primary w-full py-3 text-lg flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15.5v-9l6 4.5-6 4.5z"/></svg>
+            Pay with M-Pesa
+        </button>
+    </form>
+
+    <div class="glassmorphism rounded-xl p-4 mt-4 text-sm" style="color: #94a3b8;">
+        <p class="font-medium text-white mb-1">How it works:</p>
+        <ol class="list-decimal list-inside space-y-1">
+            <li>Select your plot and enter the amount you want to pay</li>
+            <li>Enter your M-Pesa phone number</li>
+            <li>Click "Pay with M-Pesa" to receive an STK Push prompt</li>
+            <li>Enter your M-Pesa PIN on your phone to authorize</li>
+            <li>Your payment will be confirmed automatically</li>
+        </ol>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

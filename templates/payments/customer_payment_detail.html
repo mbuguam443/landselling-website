@@ -1,0 +1,49 @@
+{% extends 'base_customer.html' %}
+{% load static %}
+{% load currency_filters %}
+{% load humanize %}
+
+{% block page_title %}Payment Details{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="glassmorphism rounded-xl p-8 glow-border">
+        <div class="flex items-center gap-3 mb-6">
+            <svg class="w-8 h-8" style="color: #00ff99;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
+            <h3 class="text-xl font-semibold text-white">Payment Details</h3>
+        </div>
+        <div class="space-y-4 text-sm">
+            <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                <span style="color: #4a4a6a;">Receipt Number</span>
+                <span class="text-white font-medium">{{ payment.receipt_number }}</span>
+            </div>
+            <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                <span style="color: #4a4a6a;">Amount</span>
+                <span class="text-2xl font-bold" style="color: #00ff99;">KSh {{ payment.amount|currency }}</span>
+            </div>
+            <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                <span style="color: #4a4a6a;">Payment Method</span>
+                <span class="text-white">{{ payment.get_payment_method_display }}</span>
+            </div>
+            <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                <span style="color: #4a4a6a;">Status</span>
+                {% if payment.status == 'confirmed' %}
+                <span style="color: #00ff99;">Confirmed</span>
+                {% elif payment.status == 'pending' %}
+                <span style="color: #ff00ff;">Pending</span>
+                {% else %}
+                <span style="color: #ff1744;">{{ payment.get_status_display }}</span>
+                {% endif %}
+            </div>
+            <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                <span style="color: #4a4a6a;">Date</span>
+                <span class="text-white">{{ payment.payment_date }}</span>
+            </div>
+        </div>
+        <div class="mt-6 flex gap-3">
+            <a href="{% url 'payments:payment_receipt' payment.id %}" class="btn-primary text-sm py-2">Download Receipt</a>
+            <a href="{% url 'payments:payment_list' %}" class="text-sm py-2 px-4 rounded-full" style="color: #00ffff; border: 1px solid #00ffff;">Back</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

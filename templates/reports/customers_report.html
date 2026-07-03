@@ -1,0 +1,43 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block page_title %}Customers Report{% endblock %}
+
+{% block content %}
+<div class="glassmorphism rounded-xl p-6 glow-border">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-lg font-semibold text-white">Customers Report</h3>
+        {% include 'components/filter_bar.html' %}
+        <div class="flex gap-2">
+            <a href="{% url 'reports:export_report' 'customers' 'csv' %}" class="btn-secondary text-sm py-2">Export CSV</a>
+            <a href="{% url 'reports:export_report' 'customers' 'xlsx' %}" class="btn-secondary text-sm py-2">Export Excel</a>
+        </div>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b text-left" style="border-color: #2a1a4a;">
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=name&order={% if sort_field == 'name' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Name {% if sort_field == 'name' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=email&order={% if sort_field == 'email' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Email {% if sort_field == 'email' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=phone&order={% if sort_field == 'phone' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Phone {% if sort_field == 'phone' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=city&order={% if sort_field == 'city' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">City {% if sort_field == 'city' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=created_at&order={% if sort_field == 'created_at' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Joined {% if sort_field == 'created_at' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customer in page_obj %}
+                <tr class="border-b" style="border-color: #2a1a4a;">
+                    <td class="py-3 text-white">{{ customer.name }}</td>
+                    <td class="py-3" style="color: #94a3b8;">{{ customer.email }}</td>
+                    <td class="py-3" style="color: #94a3b8;">{{ customer.phone }}</td>
+                    <td class="py-3" style="color: #94a3b8;">{{ customer.city|default:'-' }}</td>
+                    <td class="py-3" style="color: #4a4a6a;">{{ customer.created_at|date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include 'components/pagination.html' %}
+</div>
+{% endblock %}

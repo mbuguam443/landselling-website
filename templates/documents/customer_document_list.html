@@ -1,0 +1,35 @@
+{% extends 'base_customer.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block page_title %}My Documents{% endblock %}
+
+{% block content %}
+<div class="glassmorphism rounded-xl p-6 glow-border">
+    <h3 class="text-lg font-semibold text-white mb-6">My Documents</h3>
+    {% include 'components/filter_bar.html' %}
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b text-left" style="border-color: #2a1a4a;">
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=title&order={% if sort_field == 'title' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Title {% if sort_field == 'title' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=document_type&order={% if sort_field == 'document_type' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Type {% if sort_field == 'document_type' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=created_at&order={% if sort_field == 'created_at' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Date {% if sort_field == 'created_at' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in page_obj %}
+                <tr class="border-b" style="border-color: #2a1a4a;">
+                    <td class="py-3"><a href="{{ doc.file.url }}" target="_blank" class="text-white hover:text-primary transition">{{ doc.title }}</a></td>
+                    <td class="py-3"><span class="text-xs px-2 py-1 rounded-full" style="background: rgba(0, 255, 153, 0.15); color: #00ff99;">{{ doc.get_document_type_display }}</span></td>
+                    <td class="py-3" style="color: #4a4a6a;">{{ doc.created_at|date }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3" class="py-6 text-center" style="color: #4a4a6a;">No documents available.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include 'components/pagination.html' %}
+</div>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+{% load humanize %}
+
+{% block page_title %}Sale Details{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="glassmorphism rounded-xl p-6 glow-border">
+        <div class="flex justify-between items-start mb-6">
+            <div>
+                <h3 class="text-xl font-bold text-white">{{ sale.customer.name }}</h3>
+                <p class="text-sm" style="color: #94a3b8;">{{ sale.plot }}</p>
+            </div>
+            <span class="text-sm font-semibold px-3 py-1 rounded-full
+                {% if sale.status == 'active' %}" style="background: rgba(0, 255, 153, 0.15); color: #00ff99;
+                {% elif sale.status == 'completed' %}" style="background: rgba(0, 255, 255, 0.15); color: #00ffff;
+                {% elif sale.status == 'reservation' %}" style="background: rgba(255, 0, 255, 0.15); color: #ff00ff;
+                {% else %}" style="background: rgba(255, 23, 68, 0.15); color: #ff1744;
+                {% endif %}">{{ sale.get_status_display }}</span>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-3">
+                <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                    <span style="color: #4a4a6a;">Selling Price</span>
+                    <span class="text-white font-semibold">KSh {{ sale.selling_price|currency }}</span>
+                </div>
+                <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                    <span style="color: #4a4a6a;">Deposit</span>
+                    <span class="text-white">KSh {{ sale.deposit_amount|currency }}</span>
+                </div>
+                <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                    <span style="color: #4a4a6a;">Monthly Installment</span>
+                    <span class="text-white" style="color: #00ffff;">KSh {{ sale.monthly_installment|currency }}</span>
+                </div>
+                <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                    <span style="color: #4a4a6a;">Total Paid</span>
+                    <span class="text-white" style="color: #00ff99;">KSh {{ sale.total_paid|currency }}</span>
+                </div>
+                <div class="flex justify-between py-2">
+                    <span style="color: #4a4a6a;">Balance</span>
+                    <span class="text-white font-bold" style="color: #ff00ff;">KSh {{ sale.balance|currency }}</span>
+                </div>
+            </div>
+            <div class="space-y-3">
+                <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                    <span style="color: #4a4a6a;">Agent</span>
+                    <span class="text-white">{{ sale.sales_agent|default:'-' }}</span>
+                </div>
+                <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                    <span style="color: #4a4a6a;">Sale Date</span>
+                    <span class="text-white">{{ sale.sale_date }}</span>
+                </div>
+                <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                    <span style="color: #4a4a6a;">Installment Months</span>
+                    <span class="text-white">{{ sale.installment_months }}</span>
+                </div>
+                <div class="flex justify-between py-2">
+                    <span style="color: #4a4a6a;">Notes</span>
+                    <span class="text-white">{{ sale.notes|default:'-' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <h4 class="text-sm font-semibold text-white mb-2">Progress</h4>
+            <div class="w-full h-3 rounded-full" style="background: #1a0a2e;">
+                <div class="h-3 rounded-full" style="width: {{ sale.progress_percent }}%; background: linear-gradient(90deg, #00ff99, #00ffff);"></div>
+            </div>
+            <p class="text-xs mt-1" style="color: #4a4a6a;">{{ sale.progress_percent }}% complete</p>
+        </div>
+
+        <div class="mt-6 flex gap-3">
+            <a href="{% url 'sales:sale_edit' sale.id %}" class="btn-primary text-sm py-2">Edit Sale</a>
+            <a href="{% url 'payments:payment_create' %}?sale={{ sale.id }}" class="btn-secondary text-sm py-2">Record Payment</a>
+            <a href="{% url 'sales:sale_list' %}" class="btn-secondary text-sm py-2">Back</a>
+        </div>
+    </div>
+
+    {% if sale.payments.exists %}
+    <div class="glassmorphism rounded-xl p-6 mt-6" style="border-color: #00ffff;">
+        <h3 class="text-lg font-semibold text-white mb-4">Payments</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b text-left" style="border-color: #2a1a4a;">
+                        <th class="pb-3 font-semibold text-white">Receipt</th>
+                        <th class="pb-3 font-semibold text-white">Amount</th>
+                        <th class="pb-3 font-semibold text-white">Method</th>
+                        <th class="pb-3 font-semibold text-white">Date</th>
+                        <th class="pb-3 font-semibold text-white">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in sale.payments.all %}
+                    <tr class="border-b" style="border-color: #2a1a4a;">
+                        <td class="py-3"><a href="{% url 'payments:payment_detail' payment.id %}" class="text-white hover:text-primary">{{ payment.receipt_number }}</a></td>
+                        <td class="py-3" style="color: #00ff99;">KSh {{ payment.amount|currency }}</td>
+                        <td class="py-3" style="color: #94a3b8;">{{ payment.get_payment_method_display }}</td>
+                        <td class="py-3" style="color: #94a3b8;">{{ payment.payment_date }}</td>
+                        <td class="py-3">{% if payment.status == 'confirmed' %}<span style="color: #00ff99;">Confirmed</span>{% else %}<span style="color: #ff00ff;">{{ payment.get_status_display }}</span>{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

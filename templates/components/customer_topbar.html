@@ -1,0 +1,17 @@
+<header class="h-16 flex-shrink-0 border-b flex items-center justify-between px-4 lg:px-6" style="background: #0a0015; border-color: #2a1a4a;">
+    <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar('customerSidebar', 'customerSidebarOverlay')" class="lg:hidden p-2 rounded-lg hover:bg-primary/10 text-white focus:outline-none">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <h1 class="text-lg font-semibold text-white">{% block page_title %}My Dashboard{% endblock %}</h1>
+    </div>
+    <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2 text-sm">
+            <div class="w-8 h-8 rounded-full" style="background: linear-gradient(135deg, #00ff99, #00ffff); display: flex; align-items: center; justify-content: center;">
+                <span class="text-xs font-semibold" style="color: #0a0015;">{{ user.first_name|first|default:user.username|first|upper }}</span>
+            </div>
+            <span class="text-white">{{ user.get_full_name|default:user.username }}</span>
+        </div>
+        <a href="{% url 'accounts:logout' %}" class="text-sm text-muted-foreground hover:text-white transition">Logout</a>
+    </div>
+</header>

@@ -1,0 +1,68 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+{% load humanize %}
+
+{% block page_title %}Plots{% endblock %}
+
+{% block content %}
+<div class="glassmorphism rounded-xl p-6 glow-border">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+        <div>
+            <h3 class="text-lg font-semibold text-white">All Plots</h3>
+            {% include 'components/filter_bar.html' %}
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="{% url 'plots:plot_create' %}" class="btn-primary text-sm py-2 whitespace-nowrap">Add Plot</a>
+        </div>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b text-left" style="border-color: #2a1a4a;">
+                    <th class="pb-3 font-semibold text-white">Image</th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=plot_number&order={% if sort_field == 'plot_number' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Plot # {% if sort_field == 'plot_number' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white">Project</th>
+                    <th class="pb-3 font-semibold text-white">Phase</th>
+                    <th class="pb-3 font-semibold text-white">Size</th>
+                    <th class="pb-3 font-semibold text-white">Price</th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=status&order={% if sort_field == 'status' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Status {% if sort_field == 'status' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for plot in page_obj %}
+                <tr class="border-b" style="border-color: #2a1a4a;">
+                    <td class="py-2">
+                        {% with img=plot.images.first %}
+                        {% if img %}
+                        <img src="{{ img.image.url }}" alt="" class="w-16 h-12 rounded object-cover" style="border: 1px solid #2a1a4a;">
+                        {% else %}
+                        <div class="w-16 h-12 rounded flex items-center justify-center" style="background: #1a0a2e; border: 1px solid #2a1a4a;">
+                            <svg class="w-5 h-5" style="color: #4a4a6a;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+                    </td>
+                    <td class="py-3"><a href="{% url 'plots:plot_detail' plot.id %}" class="text-white hover:text-primary transition">{{ plot.plot_number }}</a></td>
+                    <td class="py-3" style="color: #94a3b8;">{{ plot.project.name }}</td>
+                    <td class="py-3" style="color: #94a3b8;">{{ plot.phase.name|default:'-' }}</td>
+                    <td class="py-3" style="color: #94a3b8;">{{ plot.size_sqm|floatformat:0 }} sqm</td>
+                    <td class="py-3" style="color: #94a3b8;">KSh {{ plot.price|currency }}</td>
+                    <td class="py-3">
+                        <span class="text-xs font-semibold px-2 py-1 rounded-full" style="background: {% if plot.status == 'available' %}rgba(0, 255, 153, 0.15); color: #00ff99{% elif plot.status == 'reserved' %}rgba(0, 255, 255, 0.15); color: #00ffff{% elif plot.status == 'sold' %}rgba(255, 0, 255, 0.15); color: #ff00ff{% else %}rgba(255, 23, 68, 0.15); color: #ff1744{% endif %};">{{ plot.get_status_display }}</span>
+                    </td>
+                    <td class="py-3 flex gap-2">
+                        <a href="{% url 'plots:plot_edit' plot.id %}" class="text-sm" style="color: #00ffff;">Edit</a>
+                        <a href="{% url 'plots:plot_delete' plot.id %}" class="text-sm" style="color: #ff1744;">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8" class="py-6 text-center" style="color: #4a4a6a;">No plots found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include 'components/pagination.html' %}
+</div>
+{% endblock %}

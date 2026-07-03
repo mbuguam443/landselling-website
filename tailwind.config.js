@@ -1,0 +1,50 @@
+module.exports = {
+  content: [
+    './templates/**/*.html',
+    './apps/**/*.py',
+  ],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        background: '#0a0015',
+        foreground: '#ffffff',
+        card: '#1a0a2e',
+        'card-foreground': '#ffffff',
+        popover: '#0a0015',
+        'popover-foreground': '#ffffff',
+        primary: '#00ff99',
+        'primary-foreground': '#0a0015',
+        secondary: '#ff00ff',
+        'secondary-foreground': '#ffffff',
+        muted: '#4a4a6a',
+        'muted-foreground': '#b0b0d0',
+        accent: '#00ffff',
+        'accent-foreground': '#0a0015',
+        destructive: '#ff1744',
+        'destructive-foreground': '#ffffff',
+        border: '#2a1a4a',
+        input: '#1a0a2e',
+        ring: '#00ff99',
+        sidebar: '#0a0015',
+        'sidebar-foreground': '#ffffff',
+        'sidebar-primary': '#00ff99',
+        'sidebar-primary-foreground': '#0a0015',
+        'sidebar-accent': '#00ffff',
+        'sidebar-accent-foreground': '#0a0015',
+        'sidebar-border': '#2a1a4a',
+        'sidebar-ring': '#00ff99',
+      },
+      borderRadius: {
+        DEFAULT: '0.75rem',
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+    },
+  },
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+  ],
+}

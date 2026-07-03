@@ -1,0 +1,66 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+{% load humanize %}
+
+{% block page_title %}Payments{% endblock %}
+
+{% block content %}
+<div class="glassmorphism rounded-xl p-6 glow-border">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+        <div>
+            <h3 class="text-lg font-semibold text-white">All Payments</h3>
+            {% include 'components/filter_bar.html' %}
+        </div>
+        <div class="flex items-center gap-3">
+            {% if is_staff %}<a href="{% url 'payments:payment_create' %}" class="btn-primary text-sm py-2 whitespace-nowrap">Record Payment</a>{% endif %}
+        </div>
+    </div>
+    <div class="overflow-x-auto">
+        <table id="paymentTable" class="w-full text-sm">
+            <thead>
+                <tr class="border-b text-left" style="border-color: #2a1a4a;">
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=receipt_number&order={% if sort_field == 'receipt_number' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Receipt {% if sort_field == 'receipt_number' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=customer__name&order={% if sort_field == 'customer__name' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Customer {% if sort_field == 'customer__name' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=amount&order={% if sort_field == 'amount' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Amount {% if sort_field == 'amount' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=payment_method&order={% if sort_field == 'payment_method' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Method {% if sort_field == 'payment_method' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=payment_date&order={% if sort_field == 'payment_date' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Date {% if sort_field == 'payment_date' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=status&order={% if sort_field == 'status' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Status {% if sort_field == 'status' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in page_obj %}
+                <tr class="border-b" style="border-color: #2a1a4a;">
+                    <td class="py-3"><a href="{% url 'payments:payment_detail' payment.id %}" class="text-white hover:text-primary transition">{{ payment.receipt_number }}</a></td>
+                    <td class="py-3" style="color: #94a3b8;">{{ payment.customer.name }}</td>
+                    <td class="py-3" style="color: #00ff99;">KSh {{ payment.amount|currency }}</td>
+                    <td class="py-3" style="color: #94a3b8;">{{ payment.get_payment_method_display }}</td>
+                    <td class="py-3" style="color: #94a3b8;">{{ payment.payment_date }}</td>
+                    <td class="py-3">
+                        {% if payment.status == 'confirmed' %}
+                        <span style="color: #00ff99;">Confirmed</span>
+                        {% elif payment.status == 'pending' %}
+                        <span style="color: #ff00ff;">Pending</span>
+                        {% else %}
+                        <span style="color: #ff1744;">{{ payment.get_status_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3">
+                        <div class="flex gap-2">
+                            {% if payment.status == 'pending' %}
+                            <a href="{% url 'payments:payment_confirm' payment.id %}" class="text-sm" style="color: #00ff99;">Confirm</a>
+                            {% endif %}
+                            <a href="{% url 'payments:payment_receipt' payment.id %}" class="text-sm" style="color: #00ffff;">Receipt</a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="py-6 text-center" style="color: #4a4a6a;">No payments recorded.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include 'components/pagination.html' %}
+</div>
+{% endblock %}

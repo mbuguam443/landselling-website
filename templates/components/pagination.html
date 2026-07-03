@@ -1,0 +1,22 @@
+{% if paginator.num_pages > 1 %}
+<div class="flex items-center justify-between pt-4">
+    <p class="text-sm" style="color: #8888aa;">
+        Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }}
+    </p>
+    <div class="flex gap-1">
+        {% if page_obj.has_previous %}
+        <a href="?{% if search %}&search={{ search }}{% endif %}{% if sort_field %}&sort={{ sort_field }}&order={{ sort_order }}{% endif %}&page={{ page_obj.previous_page_number }}" class="px-3 py-1.5 rounded text-sm transition-all duration-200" style="background: rgba(255,255,255,0.05); color: #b0b0d0; border: 1px solid rgba(255,255,255,0.1);">Prev</a>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+            {% if num == page_obj.number %}
+            <span class="px-3 py-1.5 rounded text-sm font-bold" style="background: #00ff99; color: #0a0015;">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?{% if search %}&search={{ search }}{% endif %}{% if sort_field %}&sort={{ sort_field }}&order={{ sort_order }}{% endif %}&page={{ num }}" class="px-3 py-1.5 rounded text-sm transition-all duration-200" style="background: rgba(255,255,255,0.05); color: #b0b0d0; border: 1px solid rgba(255,255,255,0.1);">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+        <a href="?{% if search %}&search={{ search }}{% endif %}{% if sort_field %}&sort={{ sort_field }}&order={{ sort_order }}{% endif %}&page={{ page_obj.next_page_number }}" class="px-3 py-1.5 rounded text-sm transition-all duration-200" style="background: rgba(255,255,255,0.05); color: #b0b0d0; border: 1px solid rgba(255,255,255,0.1);">Next</a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}

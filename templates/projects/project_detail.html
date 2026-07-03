@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block title %}{{ project.name }} - Prime Lands Ltd{% endblock %}
+
+{% block content %}
+<div class="pt-24 pb-12 px-4">
+    <div class="absolute inset-0" style="background: linear-gradient(135deg, #0a0015, #1a0a2e, #0a0015);"></div>
+    <div class="relative z-10 max-w-7xl mx-auto">
+        <div class="grid lg:grid-cols-2 gap-8">
+            <div>
+                {% if project.image %}
+                <div class="glassmorphism rounded-xl overflow-hidden glow-border">
+                    <img src="{{ project.image.url }}" alt="{{ project.name }}" class="w-full h-96 object-cover">
+                </div>
+                {% endif %}
+                <div class="glassmorphism rounded-xl p-6 mt-6 glow-border">
+                    <h3 class="text-lg font-semibold text-white mb-4">About This Project</h3>
+                    <p style="color: #94a3b8;">{{ project.description|default:'No description available.' }}</p>
+                </div>
+            </div>
+            <div>
+                <div class="glassmorphism rounded-xl p-6 glow-border">
+                    <h1 class="text-3xl font-bold text-white">{{ project.name }}</h1>
+                    <div class="flex items-center gap-2 mt-2">
+                        <svg class="w-4 h-4" style="color: #00ff99;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <span style="color: #94a3b8;">{{ project.location }}</span>
+                    </div>
+
+                    <div class="mt-6 space-y-3">
+                        <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                            <span style="color: #4a4a6a;">Status</span>
+                            <span class="text-sm font-semibold px-2 py-1 rounded-full" style="background: rgba(0, 255, 153, 0.15); color: #00ff99;">{{ project.get_status_display }}</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                            <span style="color: #4a4a6a;">Total Plots</span>
+                            <span class="text-white">{{ project.total_plots }}</span>
+                        </div>
+                        {% if project.start_date %}
+                        <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                            <span style="color: #4a4a6a;">Start Date</span>
+                            <span class="text-white">{{ project.start_date }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <a href="{% url 'plots:plot_list' %}?project={{ project.id }}" class="btn-primary w-full text-center py-3 mt-6 block">View Plots in This Project</a>
+                </div>
+
+                {% if project.phases.exists %}
+                <div class="glassmorphism rounded-xl p-6 mt-6" style="border-color: #00ffff;">
+                    <h3 class="text-lg font-semibold text-white mb-4">Project Phases</h3>
+                    <div class="space-y-3">
+                        {% for phase in project.phases.all %}
+                        <div class="p-3 rounded-lg" style="background: rgba(0, 255, 255, 0.05);">
+                            <p class="text-white font-medium">{{ phase.name }}</p>
+                            <p class="text-sm" style="color: #94a3b8;">{{ phase.total_plots }} plots</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

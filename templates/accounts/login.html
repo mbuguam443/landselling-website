@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block title %}Login - Prime Lands Ltd{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center px-4 pt-24 pb-12">
+    <div class="absolute inset-0" style="background: linear-gradient(135deg, #0a0015, #1a0a2e, #0a0015);"></div>
+    <div class="relative z-10 w-full max-w-md">
+        <div class="glassmorphism rounded-2xl p-8 glow-border">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 mx-auto rounded-full" style="background: linear-gradient(135deg, #00ff99, #00ffff); display: flex; align-items: center; justify-content: center;">
+                    <svg class="w-8 h-8" style="color: #0a0015;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-white mt-4">Welcome Back</h2>
+                <p class="text-sm mt-2" style="color: #94a3b8;">Sign in to your account</p>
+            </div>
+
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                {% if request.GET.next %}<input type="hidden" name="next" value="{{ request.GET.next }}">{% endif %}
+                {% for field in form %}
+                <div>
+                    <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <p class="text-sm mt-1" style="color: #ff1744;">{{ field.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <button type="submit" class="btn-primary w-full py-3 text-center">Sign In</button>
+
+                <div class="text-center text-sm" style="color: #4a4a6a;">
+                    Don't have an account? <a href="{% url 'accounts:register' %}" style="color: #00ff99;" class="hover:underline">Register</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

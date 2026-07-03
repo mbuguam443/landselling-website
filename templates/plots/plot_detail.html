@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load currency_filters %}
+{% load humanize %}
+
+{% block title %}Plot {{ plot.plot_number }} - {{ plot.project.name }}{% endblock %}
+
+{% block content %}
+<div class="pt-24 pb-12 px-4">
+    <div class="absolute inset-0" style="background: linear-gradient(135deg, #0a0015, #1a0a2e, #0a0015);"></div>
+    <div class="relative z-10 max-w-7xl mx-auto">
+        {% include 'components/breadcrumbs.html' %}
+        <div class="grid lg:grid-cols-2 gap-8">
+            <div>
+                <div class="glassmorphism rounded-xl overflow-hidden glow-border relative" id="gallery">
+                    <div id="mainImageWrapper" class="relative h-[500px] flex items-center justify-center" style="background: #1a0a2e;">
+                        <img id="mainImage" src="{% with img=plot.images.first %}{% if img %}{{ img.image.url }}{% endif %}{% endwith %}" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover" style="display: {% if plot.images.first %}block{% else %}none{% endif %};">
+                        <div id="noImagePlaceholder" class="flex items-center justify-center h-full w-full" style="display: {% if plot.images.first %}none{% else %}flex{% endif %};">
+                            <svg class="w-20 h-20" style="color: #4a4a6a;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </div>
+                        {% if plot.images.count > 1 %}
+                        <button id="galleryPrev" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center transition opacity-0 hover:opacity-100" style="background: rgba(0,0,0,0.6); color: white; border: 1px solid rgba(0,255,153,0.3);">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+                        <button id="galleryNext" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center transition opacity-0 hover:opacity-100" style="background: rgba(0,0,0,0.6); color: white; border: 1px solid rgba(0,255,153,0.3);">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </button>
+                        <div class="absolute bottom-3 right-3 px-2 py-1 rounded text-xs font-semibold" style="background: rgba(0,0,0,0.7); color: #b0b0d0;">
+                            <span id="galleryCounter">1</span>/{{ plot.images.count }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if plot.images.count > 1 %}
+                <div class="flex gap-2 mt-3 overflow-x-auto pb-2" id="thumbStrip">
+                    {% for image in plot.images.all %}
+                    <img src="{{ image.image.url }}" alt="" class="thumb-img w-24 h-16 rounded-lg object-cover cursor-pointer border-2 transition flex-shrink-0 {% if forloop.first %}active{% endif %}" style="border-color: {% if forloop.first %}#00ff99{% else %}#2a1a4a{% endif %};" data-index="{{ forloop.counter0 }}" data-url="{{ image.image.url }}">
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="glassmorphism rounded-xl p-6 mt-6 glow-border">
+                    <h3 class="text-lg font-semibold text-white mb-4">Description</h3>
+                    <p style="color: #94a3b8;">{{ plot.description|default:'No description available.' }}</p>
+                </div>
+
+                {% if plot.amenities.exists %}
+                <div class="glassmorphism rounded-xl p-6 mt-6" style="border-color: #00ffff;">
+                    <h3 class="text-lg font-semibold text-white mb-4">Nearby Amenities</h3>
+                    <div class="flex flex-wrap gap-2">
+                        {% for amenity in plot.amenities.all %}
+                        <span class="px-3 py-1 rounded-full text-sm" style="background: rgba(0, 255, 255, 0.1); color: #00ffff;">{{ amenity.name }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div>
+                <div class="glassmorphism rounded-xl p-6 glow-border">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h1 class="text-3xl font-bold text-white">Plot {{ plot.plot_number }}</h1>
+                            <p class="text-lg mt-1" style="color: #00ffff;">{{ plot.project.name }}</p>
+                            <p class="text-sm" style="color: #4a4a6a;">{{ plot.project.location }}</p>
+                        </div>
+                        <span class="text-sm font-semibold px-3 py-1 rounded-full {% if plot.status == 'available' %}" style="background: rgba(0, 255, 153, 0.15); color: #00ff99;{% elif plot.status == 'reserved' %}" style="background: rgba(0, 255, 255, 0.15); color: #00ffff;{% else %}" style="background: rgba(255, 0, 255, 0.15); color: #ff00ff;{% endif %}">{{ plot.get_status_display }}</span>
+                    </div>
+
+                    <div class="mt-6 space-y-4">
+                        <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                            <span style="color: #4a4a6a;">Plot Size</span>
+                            <span class="text-white font-medium">{{ plot.size_sqm }} sqm</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                            <span style="color: #4a4a6a;">Price</span>
+                            <span class="text-2xl font-bold" style="color: #00ff99;">KSh {{ plot.price|currency }}</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                            <span style="color: #4a4a6a;">Deposit ({{ plot.deposit_percentage }}%)</span>
+                            <span class="text-white">KSh {{ plot.deposit_amount|currency }}</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                            <span style="color: #4a4a6a;">Balance After Deposit</span>
+                            <span class="text-white">KSh {{ plot.balance|currency }}</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                            <span style="color: #4a4a6a;">Installment Period</span>
+                            <span class="text-white">Up to {{ plot.max_installment_months }} months</span>
+                        </div>
+                        <div class="flex justify-between py-2">
+                            <span style="color: #4a4a6a;">Monthly Payment</span>
+                            <span class="text-xl font-bold" style="color: #00ffff;">KSh {{ plot.monthly_installment|currency }}</span>
+                        </div>
+                    </div>
+
+                    {% if map_embed_url %}
+                    <div class="mt-6">
+                        <h4 class="text-sm font-semibold text-white mb-2">Location</h4>
+                        <div class="rounded-lg overflow-hidden h-48" style="background: #1a0a2e;">
+                            <iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="{{ map_embed_url }}" style="border:0;" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="mt-8 space-y-3">
+                        {% if plot.status != 'available' %}
+                        <div class="w-full text-center py-3 rounded-lg text-sm font-semibold" style="background: rgba(255,0,255,0.15); color: #ff00ff; border: 1px solid rgba(255,0,255,0.3);">This plot is {{ plot.get_status_display|lower }}</div>
+                        {% elif user.is_authenticated and not user.is_staff %}
+                        <a href="{% url 'sales:reservation_create' %}?plot={{ plot.id }}" class="btn-primary w-full text-center py-3 block">Book Now</a>
+                        {% else %}
+                        <a href="{% url 'accounts:login' %}?next={% url 'plots:plot_detail' plot.id %}" class="btn-primary w-full text-center py-3 block">Book Now</a>
+                        {% endif %}
+                        <a href="{% url 'website:contact' %}" class="btn-secondary w-full text-center py-3 block">Inquire About This Plot</a>
+                    </div>
+                </div>
+
+                <div class="glassmorphism rounded-xl p-6 mt-6" style="border-color: #ff00ff;">
+                    <h3 class="text-lg font-semibold text-white mb-4">Installment Calculator</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm mb-1" style="color: #b0b0d0;">Land Price (KSh)</label>
+                            <input type="number" id="calc-price" value="{{ plot.price|floatformat:0 }}" class="input-field" oninput="calcInstallment()">
+                        </div>
+                        <div>
+                            <label class="block text-sm mb-1" style="color: #b0b0d0;">Deposit (KSh)</label>
+                            <input type="number" id="calc-deposit" value="{{ plot.deposit_amount|floatformat:0 }}" class="input-field" oninput="calcInstallment()">
+                        </div>
+                        <div>
+                            <label class="block text-sm mb-1" style="color: #b0b0d0;">Installment Months</label>
+                            <input type="number" id="calc-months" value="{{ plot.max_installment_months }}" class="input-field" oninput="calcInstallment()">
+                        </div>
+                        <div>
+                            <label class="block text-sm mb-1" style="color: #b0b0d0;">Annual Interest Rate (%)</label>
+                            <input type="number" id="calc-interest" value="0" step="0.5" min="0" class="input-field" oninput="calcInstallment()">
+                        </div>
+                        <div id="calc-result" class="mt-3 p-4 rounded-lg hidden" style="background: rgba(0, 255, 153, 0.1);">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-xs" style="color: #4a4a6a;">Balance</p>
+                                    <p id="calc-balance" class="text-lg font-bold text-white"></p>
+                                </div>
+                                <div>
+                                    <p class="text-xs" style="color: #4a4a6a;">Monthly Payment</p>
+                                    <p id="calc-monthly" class="text-lg font-bold" style="color: #00ffff;"></p>
+                                </div>
+                                <div>
+                                    <p class="text-xs" style="color: #4a4a6a;">Total Interest</p>
+                                    <p id="calc-interest-total" class="text-sm text-white"></p>
+                                </div>
+                                <div>
+                                    <p class="text-xs" style="color: #4a4a6a;">Total Payable</p>
+                                    <p id="calc-total" class="text-sm text-white"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function() {
+    var images = [
+        {% for image in plot.images.all %}
+        '{{ image.image.url }}'{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    var currentIndex = 0;
+    var mainImage = document.getElementById('mainImage');
+    var placeholder = document.getElementById('noImagePlaceholder');
+    var counter = document.getElementById('galleryCounter');
+    var prevBtn = document.getElementById('galleryPrev');
+    var nextBtn = document.getElementById('galleryNext');
+    var thumbs = document.querySelectorAll('.thumb-img');
+    var wrapper = document.getElementById('mainImageWrapper');
+
+    function showImage(index) {
+        if (images.length === 0) return;
+        currentIndex = (index + images.length) % images.length;
+        mainImage.src = images[currentIndex];
+        mainImage.style.display = 'block';
+        placeholder.style.display = 'none';
+        if (counter) counter.textContent = (currentIndex + 1);
+        thumbs.forEach(function(t, i) {
+            t.style.borderColor = i === currentIndex ? '#00ff99' : '#2a1a4a';
+        });
+    }
+
+    function showPrev() { showImage(currentIndex - 1); }
+    function showNext() { showImage(currentIndex + 1); }
+
+    if (prevBtn) prevBtn.addEventListener('click', showPrev);
+    if (nextBtn) nextBtn.addEventListener('click', showNext);
+
+    wrapper.addEventListener('mouseenter', function() {
+        if (prevBtn) prevBtn.style.opacity = '1';
+        if (nextBtn) nextBtn.style.opacity = '1';
+    });
+    wrapper.addEventListener('mouseleave', function() {
+        if (prevBtn) prevBtn.style.opacity = '0';
+        if (nextBtn) nextBtn.style.opacity = '0';
+    });
+
+    thumbs.forEach(function(t) {
+        t.addEventListener('click', function() {
+            showImage(parseInt(this.dataset.index));
+        });
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft') showPrev();
+        if (e.key === 'ArrowRight') showNext();
+    });
+})();
+
+function calcInstallment() {
+    var price = parseFloat(document.getElementById('calc-price').value) || 0;
+    var deposit = parseFloat(document.getElementById('calc-deposit').value) || 0;
+    var months = parseInt(document.getElementById('calc-months').value) || 1;
+    var annualRate = parseFloat(document.getElementById('calc-interest').value) || 0;
+    var balance = Math.max(0, price - deposit);
+    var monthlyRate = annualRate / 100 / 12;
+    var monthly, totalPayable, totalInterest;
+    if (annualRate > 0) {
+        var factor = Math.pow(1 + monthlyRate, months);
+        monthly = balance * (monthlyRate * factor) / (factor - 1);
+        totalPayable = monthly * months;
+        totalInterest = totalPayable - balance;
+    } else {
+        monthly = balance / months;
+        totalPayable = balance;
+        totalInterest = 0;
+    }
+    document.getElementById('calc-balance').textContent = 'KSh ' + Math.round(balance).toLocaleString();
+    document.getElementById('calc-monthly').textContent = 'KSh ' + Math.round(monthly).toLocaleString();
+    document.getElementById('calc-interest-total').textContent = 'KSh ' + Math.round(totalInterest).toLocaleString();
+    document.getElementById('calc-total').textContent = 'KSh ' + Math.round(totalPayable + deposit).toLocaleString();
+    document.getElementById('calc-result').classList.remove('hidden');
+}
+calcInstallment();
+</script>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+{% load humanize %}
+
+{% block page_title %}Sales{% endblock %}
+
+{% block content %}
+<div class="glassmorphism rounded-xl p-6 glow-border">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+        <div>
+            <h3 class="text-lg font-semibold text-white">All Sales</h3>
+            {% include 'components/filter_bar.html' %}
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="{% url 'sales:sale_create' %}" class="btn-primary text-sm py-2 whitespace-nowrap">New Sale</a>
+        </div>
+    </div>
+    <div class="overflow-x-auto">
+        <table id="saleTable" class="w-full text-sm">
+            <thead>
+                <tr class="border-b text-left" style="border-color: #2a1a4a;">
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=customer__name&order={% if sort_field == 'customer__name' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Customer {% if sort_field == 'customer__name' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=plot__plot_number&order={% if sort_field == 'plot__plot_number' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Plot {% if sort_field == 'plot__plot_number' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=selling_price&order={% if sort_field == 'selling_price' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Price {% if sort_field == 'selling_price' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=total_paid&order={% if sort_field == 'total_paid' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Paid {% if sort_field == 'total_paid' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=balance&order={% if sort_field == 'balance' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Balance {% if sort_field == 'balance' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=status&order={% if sort_field == 'status' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Status {% if sort_field == 'status' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=sales_agent&order={% if sort_field == 'sales_agent' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Agent {% if sort_field == 'sales_agent' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sale in page_obj %}
+                <tr class="border-b" style="border-color: #2a1a4a;">
+                    <td class="py-3"><a href="{% url 'sales:sale_detail' sale.id %}" class="text-white hover:text-primary transition">{{ sale.customer.name }}</a></td>
+                    <td class="py-3" style="color: #94a3b8;">{{ sale.plot }}</td>
+                    <td class="py-3" style="color: #00ff99;">KSh {{ sale.selling_price|currency }}</td>
+                    <td class="py-3" style="color: #00ffff;">KSh {{ sale.total_paid|currency }}</td>
+                    <td class="py-3" style="color: #ff00ff;">KSh {{ sale.balance|currency }}</td>
+                    <td class="py-3">
+                        <span class="text-xs font-semibold px-2 py-1 rounded-full
+                        {% if sale.status == 'active' %}" style="background: rgba(0, 255, 153, 0.15); color: #00ff99;
+                        {% elif sale.status == 'completed' %}" style="background: rgba(0, 255, 255, 0.15); color: #00ffff;
+                        {% elif sale.status == 'reservation' %}" style="background: rgba(255, 0, 255, 0.15); color: #ff00ff;
+                        {% elif sale.status == 'cancelled' %}" style="background: rgba(255, 23, 68, 0.15); color: #ff1744;
+                        {% else %}" style="background: rgba(255, 255, 0, 0.15); color: #ffff00;
+                        {% endif %}">{{ sale.get_status_display }}</span>
+                    </td>
+                    <td class="py-3" style="color: #4a4a6a;">{{ sale.sales_agent|default:'-' }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="py-6 text-center" style="color: #4a4a6a;">No sales recorded.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include 'components/pagination.html' %}
+</div>
+{% endblock %}

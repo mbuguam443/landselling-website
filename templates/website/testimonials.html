@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block title %}Testimonials - Prime Lands Ltd{% endblock %}
+
+{% block content %}
+<div class="pt-24 pb-12 px-4">
+    <div class="absolute inset-0" style="background: linear-gradient(135deg, #0a0015, #1a0a2e, #0a0015);"></div>
+    <div class="relative z-10 max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold" style="color: #00ff99; text-shadow: 0 0 20px rgba(0, 255, 153, 0.8);">Testimonials</h1>
+            <p class="text-lg mt-4" style="color: #b0b0d0;">Hear from our satisfied customers</p>
+        </div>
+        {% include 'components/testimonials.html' %}
+    </div>
+</div>
+{% endblock %}

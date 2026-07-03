@@ -1,0 +1,57 @@
+<section class="relative py-24 px-4">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center space-y-4 mb-16">
+            <h2 class="text-4xl md:text-5xl font-semibold" style="color: #00ff99; text-shadow: 0 0 20px rgba(0, 255, 153, 0.8);">Available Plots</h2>
+            <p class="text-lg max-w-2xl mx-auto" style="color: #b0b0d0;">Prime land ready for immediate purchase with flexible payment plans</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for plot in featured_plots %}
+            <a href="{% url 'plots:plot_detail' plot.id %}" class="glassmorphism rounded-xl overflow-hidden glow-border hover:neon-glow transition group">
+                {% with primary_image=plot.images.first %}
+                {% if primary_image %}
+                <div class="h-48 overflow-hidden">
+                    <img src="{{ primary_image.image.url }}" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                </div>
+                {% else %}
+                <div class="h-48 flex items-center justify-center" style="background: #1a0a2e;">
+                    <svg class="w-12 h-12" style="color: #4a4a6a;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </div>
+                {% endif %}
+                {% endwith %}
+                <div class="p-5">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-lg font-semibold text-white">Plot {{ plot.plot_number }}</h3>
+                            <p class="text-sm" style="color: #94a3b8;">{{ plot.project.name }}</p>
+                        </div>
+                        <span class="text-xs font-semibold px-2 py-1 rounded-full" style="background: rgba(0, 255, 153, 0.15); color: #00ff99;">{{ plot.get_status_display }}</span>
+                    </div>
+                    <div class="mt-3 space-y-1 text-sm">
+                        <div class="flex justify-between">
+                            <span style="color: #4a4a6a;">Size:</span>
+                            <span class="text-white">{{ plot.size_sqm }} sqm</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span style="color: #4a4a6a;">Price:</span>
+                            <span class="font-semibold" style="color: #00ff99;">KSh {{ plot.price }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span style="color: #4a4a6a;">Monthly:</span>
+                            <span style="color: #00ffff;">KSh {{ plot.monthly_installment }}</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% empty %}
+            <div class="col-span-3 text-center py-12">
+                <p class="text-lg" style="color: #4a4a6a;">No available plots at the moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-10">
+            <a href="{% url 'plots:plot_list' %}" class="btn-primary">Browse All Plots</a>
+        </div>
+    </div>
+</section>

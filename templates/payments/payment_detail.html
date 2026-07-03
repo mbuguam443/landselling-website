@@ -1,0 +1,62 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+{% load humanize %}
+
+{% block page_title %}Payment Details{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="glassmorphism rounded-xl p-6 glow-border">
+        <div class="flex justify-between items-start mb-6">
+            <div>
+                <h3 class="text-xl font-bold text-white">{{ payment.receipt_number }}</h3>
+                <p class="text-sm" style="color: #94a3b8;">{{ payment.customer.name }}</p>
+            </div>
+            {% if payment.status == 'confirmed' %}
+            <span class="text-sm font-semibold px-3 py-1 rounded-full" style="background: rgba(0, 255, 153, 0.15); color: #00ff99;">Confirmed</span>
+            {% elif payment.status == 'pending' %}
+            <span class="text-sm font-semibold px-3 py-1 rounded-full" style="background: rgba(255, 0, 255, 0.15); color: #ff00ff;">Pending</span>
+            {% else %}
+            <span class="text-sm font-semibold px-3 py-1 rounded-full" style="background: rgba(255, 23, 68, 0.15); color: #ff1744;">{{ payment.get_status_display }}</span>
+            {% endif %}
+        </div>
+
+        <div class="space-y-3">
+            <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                <span style="color: #4a4a6a;">Amount</span>
+                <span class="text-2xl font-bold" style="color: #00ff99;">KSh {{ payment.amount|currency }}</span>
+            </div>
+            <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                <span style="color: #4a4a6a;">Payment Method</span>
+                <span class="text-white">{{ payment.get_payment_method_display }}</span>
+            </div>
+            {% if payment.transaction_code %}
+            <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                <span style="color: #4a4a6a;">Transaction Code</span>
+                <span class="text-white">{{ payment.transaction_code }}</span>
+            </div>
+            {% endif %}
+            <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                <span style="color: #4a4a6a;">Payment Date</span>
+                <span class="text-white">{{ payment.payment_date }}</span>
+            </div>
+            <div class="flex justify-between py-2">
+                <span style="color: #4a4a6a;">Sale</span>
+                <span class="text-white">{{ payment.sale|default:'-' }}</span>
+            </div>
+        </div>
+
+        <div class="mt-6 flex gap-3">
+            {% if payment.status == 'pending' and is_staff %}
+            <a href="{% url 'payments:payment_confirm' payment.id %}" class="btn-primary text-sm py-2">Confirm Payment</a>
+            {% endif %}
+            {% if payment.status == 'pending' and is_staff and payment.payment_method == 'mpesa' %}
+            <a href="{% url 'payments:staff_mpesa_query' payment.id %}" class="btn-secondary text-sm py-2">Query M-Pesa Status</a>
+            {% endif %}
+            <a href="{% url 'payments:payment_receipt' payment.id %}" class="btn-secondary text-sm py-2">Download Receipt (PDF)</a>
+            <a href="{% url 'payments:payment_list' %}" class="btn-secondary text-sm py-2">Back</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

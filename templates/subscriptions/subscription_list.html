@@ -1,0 +1,56 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block page_title %}Subscriptions{% endblock %}
+
+{% block content %}
+{% include 'components/filter_bar.html' with title='Subscriptions' %}
+<div class="glassmorphism rounded-xl overflow-hidden glow-border">
+    <table class="w-full">
+        <thead>
+            <tr style="background: rgba(255,255,255,0.05);">
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: #4a4a6a;">User</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: #4a4a6a;">Email</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: #4a4a6a;">Plan</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: #4a4a6a;">Type</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: #4a4a6a;">Start</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: #4a4a6a;">End</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style="color: #4a4a6a;">Status</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y" style="border-color: #2a1a4a;">
+            {% for sub in page_obj %}
+            <tr class="hover:bg-white/5 transition">
+                <td class="px-4 py-3">
+                    <p class="text-sm font-semibold text-white">{{ sub.user.get_full_name_or_username }}</p>
+                    <p class="text-xs" style="color: #4a4a6a;">{{ sub.user.get_role_display }}</p>
+                </td>
+                <td class="px-4 py-3 text-sm" style="color: #b0b0d0;">{{ sub.user.email }}</td>
+                <td class="px-4 py-3 text-sm" style="color: #00ffff;">{{ sub.plan.name|default:'—' }}</td>
+                <td class="px-4 py-3 text-sm">
+                    {% if sub.plan and sub.plan.plan_type == 'percentage' %}
+                    <span class="px-2 py-1 text-xs rounded-full" style="background: rgba(255,0,255,0.15); color: #ff00ff;">% of Sale</span>
+                    {% else %}
+                    <span class="px-2 py-1 text-xs rounded-full" style="background: rgba(0,255,255,0.15); color: #00ffff;">Fixed</span>
+                    {% endif %}
+                </td>
+                <td class="px-4 py-3 text-sm" style="color: #b0b0d0;">{{ sub.start_date }}</td>
+                <td class="px-4 py-3 text-sm" style="color: #b0b0d0;">{{ sub.end_date }}</td>
+                <td class="px-4 py-3 text-sm">
+                    {% if sub.is_expired %}
+                    <span class="px-2 py-1 text-xs rounded-full" style="background: rgba(255,23,68,0.15); color: #ff1744;">Expired</span>
+                    {% elif sub.is_active %}
+                    <span class="px-2 py-1 text-xs rounded-full" style="background: rgba(0,255,153,0.15); color: #00ff99;">Active</span>
+                    {% else %}
+                    <span class="px-2 py-1 text-xs rounded-full" style="background: rgba(255,255,0,0.15); color: #ffea00;">Inactive</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="px-4 py-8 text-center" style="color: #4a4a6a;">No subscriptions yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% include 'components/pagination.html' %}
+{% endblock %}

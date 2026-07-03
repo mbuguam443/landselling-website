@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Payment Statement — {{ statement.plot.plot_number }}</title>
+    <style>
+        @page { margin: 15mm 12mm; }
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1a1a2e; margin: 0; padding: 0; font-size: 9px; line-height: 1.5; }
+        .header { text-align: center; padding-bottom: 15px; border-bottom: 3px solid #00ff99; margin-bottom: 20px; }
+        .header .logo svg { display: block; margin: 0 auto 10px; }
+        .header h1 { font-size: 18px; color: #1a1a2e; margin: 0 0 2px; letter-spacing: 1px; text-transform: uppercase; }
+        .header .tagline { font-size: 8px; color: #00ff99; margin: 0 0 6px; letter-spacing: 2px; text-transform: uppercase; }
+        .header .contact { font-size: 7px; color: #888; margin: 0; }
+        .title { text-align: center; margin-bottom: 20px; }
+        .title h2 { font-size: 14px; color: #1a1a2e; margin: 0; letter-spacing: 3px; text-transform: uppercase; }
+        .title .date { font-size: 9px; color: #888; margin: 4px 0 0; }
+        .info-box { margin-bottom: 20px; border: 1px solid #eee; border-radius: 4px; padding: 10px 12px; }
+        .info-box table { width: 100%; border-collapse: collapse; }
+        .info-box td { padding: 3px 6px; font-size: 9px; }
+        .info-box .label { color: #888; width: 100px; }
+        .info-box .value { color: #1a1a2e; font-weight: bold; }
+        table.details { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        table.details th { background: #1a1a2e; color: #fff; padding: 7px 8px; text-align: left; font-size: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        table.details th.right { text-align: right; }
+        table.details td { padding: 6px 8px; border-bottom: 1px solid #eee; font-size: 8px; }
+        table.details td.right { text-align: right; }
+        table.details tr:last-child td { border-bottom: 2px solid #00ff99; }
+        table.details tr:nth-child(even) { background: #fafafa; }
+        .summary { margin-top: 20px; }
+        .summary table { width: 100%; border-collapse: collapse; }
+        .summary td { padding: 5px 8px; font-size: 9px; }
+        .summary .label { color: #888; }
+        .summary .value { text-align: right; font-weight: bold; }
+        .summary .total td { padding-top: 8px; border-top: 2px solid #00ff99; font-size: 11px; }
+        .summary .total .value { color: #1a1a2e; font-size: 13px; }
+        .progress-bar { margin: 15px 0; background: #eee; border-radius: 10px; height: 8px; overflow: hidden; }
+        .progress-bar .fill { background: #00ff99; height: 8px; border-radius: 10px; }
+        .progress-text { text-align: center; font-size: 8px; color: #888; margin-top: 4px; }
+        .footer { margin-top: 30px; padding-top: 10px; border-top: 1px solid #ddd; font-size: 7px; color: #aaa; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <svg width="50" height="50" viewBox="0 0 60 60">
+                <rect width="60" height="60" rx="12" fill="#1a1a2e"/>
+                <path d="M30 10 L48 26 L44 30 L30 18 L16 30 L12 26 Z" fill="#00ff99"/>
+                <path d="M16 30 L16 42 L30 50 L44 42 L44 30" fill="none" stroke="#00ff99" stroke-width="2"/>
+                <rect x="26" y="34" width="8" height="12" rx="1" fill="#00ff99"/>
+            </svg>
+        </div>
+        <h1>{{ company_name|default:'Prime Lands Ltd' }}</h1>
+        <p class="tagline">{{ company_tagline|default:'Your Trusted Real Estate Partner' }}</p>
+        <p class="contact">{{ company_address|default:'99 Westlands Rd, Nairobi' }} | {{ company_phone|default:'+254 700 000 000' }} | {{ company_email|default:'info@primelands.com' }}</p>
+    </div>
+
+    <div class="title">
+        <h2>Payment Statement</h2>
+        <p class="date">Statement Date: {{ statement.statement_date|date:"d M Y" }}</p>
+    </div>
+
+    <div class="info-box">
+        <table>
+            <tr><td class="label">Customer:</td><td class="value">{{ statement.customer.name }}</td></tr>
+            <tr><td class="label">Plot:</td><td class="value">{{ statement.plot.plot_number }} — {{ statement.plot.project.name }}</td></tr>
+            <tr><td class="label">Sale Date:</td><td class="value">{{ statement.sale.sale_date|date:"d M Y" }}</td></tr>
+        </table>
+    </div>
+
+    <table class="details">
+        <thead><tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th class="right">Amount ({{ currency|default:'KSh' }})</th>
+            <th class="right">Balance</th>
+        </tr></thead>
+        <tbody>
+            <tr>
+                <td>{{ statement.sale.sale_date|date:"d M Y" }}</td>
+                <td>Purchase Price — {{ statement.plot.plot_number }}</td>
+                <td class="right">—</td>
+                <td class="right">{{ statement.selling_price|floatformat:2 }}</td>
+            </tr>
+            {% for line in statement.lines %}
+            <tr>
+                <td>{{ line.date|date:"d M Y" }}</td>
+                <td>{{ line.description }}</td>
+                <td class="right">{{ line.amount|floatformat:2 }}</td>
+                <td class="right">{{ line.running_balance|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="progress-bar">
+        <div class="fill" style="width: {{ statement.progress_percent }}%;"></div>
+    </div>
+    <p class="progress-text">{{ statement.progress_percent }}% of selling price paid</p>
+
+    <div class="summary">
+        <table>
+            <tr><td class="label">Selling Price</td><td class="value">{{ currency|default:'KSh' }} {{ statement.selling_price|floatformat:2 }}</td></tr>
+            <tr><td class="label">Total Paid</td><td class="value">{{ currency|default:'KSh' }} {{ statement.total_paid|floatformat:2 }}</td></tr>
+            <tr class="total"><td class="label">Remaining Balance</td><td class="value">{{ currency|default:'KSh' }} {{ statement.balance|floatformat:2 }}</td></tr>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p>This is a computer-generated statement. All amounts are in {{ currency|default:'KSh' }}.</p>
+        <p>{{ company_name|default:'Prime Lands Ltd' }} &copy; {% now 'Y' %}. All rights reserved.</p>
+    </div>
+</body>
+</html>

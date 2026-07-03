@@ -1,0 +1,90 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block page_title %}Verification Requests{% endblock %}
+
+{% block breadcrumbs %}
+<nav class="flex mb-6" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 md:space-x-3 text-sm">
+        <li class="inline-flex items-center"><a href="{% url 'dashboard:home' %}" class="text-gray-400 hover:text-white">Dashboard</a></li>
+        <li><span class="mx-2 text-gray-500">/</span></li>
+        <li class="text-[#00ff99]">Verification Requests</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <div>
+        <div class="flex items-center gap-3 mb-4">
+            <div style="width: 4px; height: 24px; background: #ffc107; border-radius: 2px;"></div>
+            <h2 class="text-lg font-bold text-white">Pending Verification</h2>
+            {% include 'components/filter_bar.html' %}
+            <span class="text-xs px-2.5 py-0.5 rounded-full" style="background: rgba(255,193,7,0.1); color: #ffc107;">{{ paginator.count }}</span>
+        </div>
+
+        {% if page_obj %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for c in page_obj %}
+            <div class="glassmorphism rounded-xl p-5">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold" style="background: rgba(255,193,7,0.15); color: #ffc107;">
+                        {{ c.name|first|upper }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-white font-medium truncate">{{ c.name }}</p>
+                        <p class="text-xs truncate" style="color: #4a4a6a;">{{ c.email }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 mb-3">
+                    {% if c.national_id %}<span class="text-xs px-2 py-0.5 rounded" style="background: rgba(0,255,153,0.08); color: #00ff99;">ID</span>{% endif %}
+                    {% if c.passport_photo %}<span class="text-xs px-2 py-0.5 rounded" style="background: rgba(0,255,153,0.08); color: #00ff99;">Photo</span>{% endif %}
+                    {% if c.id_front %}<span class="text-xs px-2 py-0.5 rounded" style="background: rgba(0,255,153,0.08); color: #00ff99;">ID Front</span>{% endif %}
+                    {% if c.id_back %}<span class="text-xs px-2 py-0.5 rounded" style="background: rgba(0,255,153,0.08); color: #00ff99;">ID Back</span>{% endif %}
+                </div>
+                <div class="flex gap-2">
+                    <a href="{% url 'customers:customer_detail' c.id %}" class="btn-secondary text-xs py-1.5 px-3" style="font-size: 11px;">Review</a>
+                    <a href="{% url 'customers:customer_verify' c.id %}" class="text-xs py-1.5 px-3 rounded-full font-medium" style="background: linear-gradient(to right, #ffc107, #ff9800); color: #0a0015;">Verify</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="glassmorphism rounded-xl p-8 text-center">
+            <p class="text-white font-medium">No pending verification requests</p>
+            <p class="text-sm mt-1" style="color: #4a4a6a;">All customers have been verified.</p>
+        </div>
+        {% endif %}
+    </div>
+    {% include 'components/pagination.html' %}
+
+    <div>
+        <div class="flex items-center gap-3 mb-4">
+            <div style="width: 4px; height: 24px; background: #00ff99; border-radius: 2px;"></div>
+            <h2 class="text-lg font-bold text-white">Verified Customers</h2>
+            <span class="text-xs px-2.5 py-0.5 rounded-full" style="background: rgba(0,255,153,0.1); color: #00ff99;">{{ verified|length }}</span>
+        </div>
+
+        {% if verified %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for c in verified %}
+            <div class="glassmorphism rounded-xl p-5">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold" style="background: rgba(0,255,153,0.15); color: #00ff99;">
+                        {{ c.name|first|upper }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-white font-medium truncate">{{ c.name }}</p>
+                        <p class="text-xs truncate" style="color: #4a4a6a;">{{ c.email }}</p>
+                    </div>
+                    <a href="{% url 'customers:customer_detail' c.id %}" class="text-xs" style="color: #00ffff;">View</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-sm" style="color: #4a4a6a;">No verified customers yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

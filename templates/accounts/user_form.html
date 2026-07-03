@@ -1,0 +1,51 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block page_title %}Create User{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto">
+    <div class="glassmorphism rounded-xl p-8 glow-border">
+        <h2 class="text-2xl font-bold text-white mb-6">Create New User</h2>
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">Username *</label>
+                <input type="text" name="username" required class="input-field">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">Email</label>
+                <input type="email" name="email" class="input-field">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">First Name</label>
+                    <input type="text" name="first_name" class="input-field">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">Last Name</label>
+                    <input type="text" name="last_name" class="input-field">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">Role</label>
+                <select name="role" class="input-field">
+                    <option value="sales_agent">Sales Agent</option>
+                    <option value="finance_officer">Finance Officer</option>
+                    <option value="customer_care">Customer Care</option>
+                    <option value="administrator">Administrator</option>
+                    <option value="customer">Customer</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1" style="color: #b0b0d0;">Password *</label>
+                <input type="password" name="password" required class="input-field">
+            </div>
+            <div class="flex gap-3 pt-4">
+                <button type="submit" class="btn-primary py-2">Create User</button>
+                <a href="{% url 'accounts:user_list' %}" class="btn-secondary py-2">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

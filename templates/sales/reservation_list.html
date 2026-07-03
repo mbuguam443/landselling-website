@@ -1,0 +1,59 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block page_title %}Reservations{% endblock %}
+
+{% block content %}
+<div class="glassmorphism rounded-xl p-6 glow-border">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-lg font-semibold text-white">Reservations</h3>
+        {% include 'components/filter_bar.html' %}
+        <a href="{% url 'sales:reservation_create' %}" class="btn-primary text-sm py-2">New Reservation</a>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b text-left" style="border-color: #2a1a4a;">
+                    <th class="pb-3 font-semibold text-white">#</th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=customer__name&order={% if sort_field == 'customer__name' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Customer {% if sort_field == 'customer__name' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=plot&order={% if sort_field == 'plot' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Plot {% if sort_field == 'plot' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=amount&order={% if sort_field == 'amount' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Amount {% if sort_field == 'amount' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=expiry_date&order={% if sort_field == 'expiry_date' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Expiry {% if sort_field == 'expiry_date' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=status&order={% if sort_field == 'status' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Status {% if sort_field == 'status' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservation in page_obj %}
+                <tr class="border-b" style="border-color: #2a1a4a;">
+                    <td class="py-3 text-white">{{ reservation.id }}</td>
+                    <td class="py-3"><a href="{% url 'sales:reservation_detail' reservation.id %}" class="text-white hover:text-primary transition">{{ reservation.customer.name }}</a></td>
+                    <td class="py-3" style="color: #94a3b8;">{{ reservation.plot }}</td>
+                    <td class="py-3" style="color: #00ff99;">KSh {{ reservation.amount|currency }}</td>
+                    <td class="py-3" style="color: #94a3b8;">{{ reservation.expiry_date|date }}</td>
+                    <td class="py-3">
+                        <span class="text-xs px-2 py-1 rounded-full
+                        {% if reservation.status == 'active' %}" style="background: rgba(0, 255, 153, 0.15); color: #00ff99;
+                        {% elif reservation.status == 'converted' %}" style="background: rgba(0, 255, 255, 0.15); color: #00ffff;
+                        {% elif reservation.status == 'expired' %}" style="background: rgba(255, 23, 68, 0.15); color: #ff1744;
+                        {% else %}" style="background: rgba(255, 255, 0, 0.15); color: #ffff00;
+                        {% endif %}">{{ reservation.get_status_display }}</span>
+                    </td>
+                    <td class="py-3">
+                        <a href="{% url 'sales:reservation_detail' reservation.id %}" class="text-sm" style="color: #00ffff;">View</a>
+                        {% if reservation.status == 'active' %}
+                        <a href="{% url 'sales:reservation_convert' reservation.id %}" class="text-sm ml-2" style="color: #00ff99;">Convert</a>
+                        <a href="{% url 'sales:reservation_cancel' reservation.id %}" class="text-sm ml-2" style="color: #ff1744;">Cancel</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="py-6 text-center" style="color: #4a4a6a;">No reservations.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include 'components/pagination.html' %}
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% load static %}
+{% load currency_filters %}
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Prime Lands Ltd - Your Trusted Real Estate Partner{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+    <style>
+        :root {
+            --background: #0a0015;
+            --foreground: #ffffff;
+            --card: #1a0a2e;
+            --card-foreground: #ffffff;
+            --primary: #00ff99;
+            --primary-foreground: #0a0015;
+            --secondary: #ff00ff;
+            --secondary-foreground: #ffffff;
+            --muted: #4a4a6a;
+            --muted-foreground: #b0b0d0;
+            --accent: #00ffff;
+            --accent-foreground: #0a0015;
+            --border: #2a1a4a;
+            --ring: #00ff99;
+        }
+        * { border-color: var(--border); }
+        body { background: var(--background); color: var(--foreground); font-family: 'Inter', sans-serif; }
+        .glassmorphism { background: rgba(26, 10, 46, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 153, 0.2); }
+        .glow-border { border: 1px solid var(--primary); box-shadow: 0 0 10px rgba(0, 255, 153, 0.3); }
+        .neon-glow { box-shadow: 0 0 30px rgba(0, 255, 153, 0.6); }
+        .neon-text-glow { color: var(--primary); text-shadow: 0 0 20px rgba(0, 255, 153, 0.8); }
+        .btn-primary { background: linear-gradient(to right, #00ff99, #00ffff); color: #0a0015; font-weight: 600; border-radius: 9999px; padding: 0.5rem 1.5rem; transition: all 0.3s; cursor: pointer; }
+        .btn-primary:hover { box-shadow: 0 0 20px rgba(0, 255, 153, 0.5); }
+        .btn-secondary { border: 2px solid #00ffff; background: transparent; color: white; font-weight: 600; border-radius: 9999px; padding: 0.5rem 1.5rem; transition: all 0.3s; cursor: pointer; }
+        .btn-secondary:hover { background: rgba(0, 255, 153, 0.1); }
+        .input-field { width: 100%; padding: 0.5rem 1rem; background: rgba(10, 0, 21, 0.5); border: 2px solid #4a4a6a; border-radius: 0.5rem; color: white; }
+        .input-field:focus { outline: none; border-color: #00ff99; }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="antialiased">
+    {% include 'components/navbar.html' %}
+
+    {% if messages %}
+    <div class="fixed top-24 right-4 z-50 space-y-2 max-w-sm" id="toast-container">
+        {% for message in messages %}
+        <div class="toast-notification glassmorphism rounded-lg px-4 py-3 shadow-lg cursor-pointer flex items-center gap-3" style="border-left: 4px solid {% if message.tags == 'error' %}#ff1744{% elif message.tags == 'success' %}#00ff99{% elif message.tags == 'warning' %}#ff00ff{% else %}#00ffff{% endif %};">
+            <span class="text-lg" style="color: {% if message.tags == 'error' %}#ff1744{% elif message.tags == 'success' %}#00ff99{% elif message.tags == 'warning' %}#ff00ff{% else %}#00ffff{% endif %};">{% if message.tags == 'error' %}&times;{% elif message.tags == 'success' %}&check;{% elif message.tags == 'warning' %}!{% else %}&#9432;{% endif %}</span>
+            <p class="text-sm flex-1">{{ message }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+
+    {% include 'components/footer.html' %}
+
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

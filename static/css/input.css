@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+@layer components {
+  .glow-border {
+    @apply border border-primary shadow-lg;
+  }
+  .glow-border-cyan {
+    @apply border border-accent;
+  }
+  .glow-border-magenta {
+    @apply border;
+    border-color: #ff00ff;
+  }
+  .glassmorphism {
+    @apply bg-card/40 backdrop-blur-md border;
+    border-color: rgba(0, 255, 153, 0.2);
+  }
+  .neon-glow {
+    box-shadow: 0 0 30px rgba(0, 255, 153, 0.6);
+  }
+  .neon-glow-cyan {
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
+  }
+  .neon-glow-magenta {
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.6);
+  }
+  .neon-text-glow {
+    @apply text-primary;
+    text-shadow: 0 0 20px rgba(0, 255, 153, 0.8);
+  }
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary to-accent text-background font-semibold rounded-full px-6 py-2 hover:shadow-lg transition-all cursor-pointer;
+  }
+  .btn-secondary {
+    @apply border-2 border-accent bg-transparent text-foreground font-semibold rounded-full px-6 py-2 hover:bg-primary/10 transition-all cursor-pointer;
+  }
+  .btn-outline {
+    @apply border border-primary text-primary font-semibold rounded-full px-6 py-2 hover:bg-primary/10 transition-all cursor-pointer;
+  }
+  .input-field {
+    @apply w-full px-4 py-2 bg-background/50 border-2 border-gray-600 rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary transition-all;
+  }
+  .card-custom {
+    @apply p-6 rounded-xl glassmorphism glow-border hover:neon-glow transition;
+  }
+}

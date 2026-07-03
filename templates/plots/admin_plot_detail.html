@@ -1,0 +1,145 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block page_title %}Plot {{ plot.plot_number }}{% endblock %}
+
+{% block breadcrumbs %}
+<nav class="flex items-center gap-2 text-xs" style="color: #4a4a6a;">
+    <a href="{% url 'dashboard:home' %}" class="hover:text-white transition">Dashboard</a>
+    <span>&gt;</span>
+    <a href="{% url 'plots:plot_list' %}" class="hover:text-white transition">Plots</a>
+    <span>&gt;</span>
+    <span style="color: #b0b0d0;">{{ plot.plot_number }}</span>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="glassmorphism rounded-xl p-6 glow-border">
+        <div class="flex justify-between items-start mb-6">
+            <div>
+                <h3 class="text-xl font-bold text-white">{{ plot.project.name }} - Plot {{ plot.plot_number }}</h3>
+                <p class="text-sm" style="color: #94a3b8;">{{ plot.project.location }}</p>
+            </div>
+            <div class="flex gap-2">
+                <a href="{% url 'plots:plot_edit' plot.id %}" class="btn-primary text-sm py-2">Edit</a>
+                <a href="{% url 'plots:plot_delete' plot.id %}" class="py-2 px-4 rounded-full font-semibold text-sm cursor-pointer" style="background: #ff1744; color: white;">Delete</a>
+            </div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-3">
+                <div class="flex border-b py-2" style="border-color: #2a1a4a;">
+                    <span class="w-32 text-sm" style="color: #4a4a6a;">Status</span>
+                    <span class="text-xs font-semibold px-2 py-1 rounded-full" style="background: rgba(0, 255, 153, 0.15); color: #00ff99;">{{ plot.get_status_display }}</span>
+                </div>
+                <div class="flex border-b py-2" style="border-color: #2a1a4a;">
+                    <span class="w-32 text-sm" style="color: #4a4a6a;">Size</span>
+                    <span class="text-white">{{ plot.size_sqm }} sqm</span>
+                </div>
+                <div class="flex border-b py-2" style="border-color: #2a1a4a;">
+                    <span class="w-32 text-sm" style="color: #4a4a6a;">Price</span>
+                    <span class="text-white">KSh {{ plot.price|currency }}</span>
+                </div>
+                <div class="flex border-b py-2" style="border-color: #2a1a4a;">
+                    <span class="w-32 text-sm" style="color: #4a4a6a;">Deposit</span>
+                    <span class="text-white">{{ plot.deposit_percentage }}% (KSh {{ plot.deposit_amount|currency }})</span>
+                </div>
+                <div class="flex border-b py-2" style="border-color: #2a1a4a;">
+                    <span class="w-32 text-sm" style="color: #4a4a6a;">Installment</span>
+                    <span class="text-white">KSh {{ plot.monthly_installment|currency }}/mo for {{ plot.max_installment_months }} months</span>
+                </div>
+                {% if plot.phase %}
+                <div class="flex border-b py-2" style="border-color: #2a1a4a;">
+                    <span class="w-32 text-sm" style="color: #4a4a6a;">Phase</span>
+                    <span class="text-white">{{ plot.phase.name }}</span>
+                </div>
+                {% endif %}
+                {% if plot.coordinates %}
+                <div class="flex py-2">
+                    <span class="w-32 text-sm" style="color: #4a4a6a;">Coordinates</span>
+                    <span class="text-white">{{ plot.coordinates }}</span>
+                </div>
+                {% endif %}
+            </div>
+            <div class="space-y-3">
+                <div class="flex border-b py-2" style="border-color: #2a1a4a;">
+                    <span class="w-32 text-sm" style="color: #4a4a6a;">Featured</span>
+                    <span class="text-white">{% if plot.featured %}Yes{% else %}No{% endif %}</span>
+                </div>
+                {% if plot.amenities.exists %}
+                <div class="flex border-b py-2" style="border-color: #2a1a4a;">
+                    <span class="w-32 text-sm" style="color: #4a4a6a;">Amenities</span>
+                    <span class="text-white">{% for amenity in plot.amenities.all %}{{ amenity.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+                </div>
+                {% endif %}
+                <div class="py-2">
+                    <span class="text-sm" style="color: #4a4a6a;">Description</span>
+                    <p class="text-white mt-1">{{ plot.description|default:'No description.' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if plot.images.exists %}
+    <div class="glassmorphism rounded-xl p-6 glow-border mt-6">
+        <h4 class="text-lg font-semibold text-white mb-4">Plot Images</h4>
+        <div class="relative rounded-lg overflow-hidden h-[400px] flex items-center justify-center" style="background: #1a0a2e;" id="adminGallery">
+            <img id="adminMainImage" src="{{ plot.images.first.image.url }}" alt="" class="w-full h-full object-cover">
+            {% if plot.images.count > 1 %}
+            <button id="adminPrev" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 transition" style="background: rgba(0,0,0,0.6); color: white;">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            </button>
+            <button id="adminNext" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 transition" style="background: rgba(0,0,0,0.6); color: white;">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <div class="absolute bottom-3 right-3 px-2 py-1 rounded text-xs font-semibold" style="background: rgba(0,0,0,0.7); color: #b0b0d0;">
+                <span id="adminCounter">1</span>/{{ plot.images.count }}
+            </div>
+            {% endif %}
+        </div>
+        {% if plot.images.count > 1 %}
+        <div class="flex gap-2 mt-3 overflow-x-auto" id="adminThumbs">
+            {% for image in plot.images.all %}
+            <img src="{{ image.image.url }}" alt="" class="admin-thumb w-24 h-16 rounded-lg object-cover cursor-pointer border-2 transition flex-shrink-0 {% if forloop.first %}active{% endif %}" style="border-color: {% if forloop.first %}#00ff99{% else %}#2a1a4a{% endif %};" data-index="{{ forloop.counter0 }}">
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    <script>
+    (function() {
+        var urls = [{% for image in plot.images.all %}'{{ image.image.url }}'{% if not forloop.last %},{% endif %}{% endfor %}];
+        var idx = 0, img = document.getElementById('adminMainImage');
+        var prev = document.getElementById('adminPrev'), next = document.getElementById('adminNext');
+        var ctr = document.getElementById('adminCounter');
+        var thumbs = document.querySelectorAll('.admin-thumb');
+        var wrap = document.getElementById('adminGallery');
+        function show(i) {
+            idx = (i + urls.length) % urls.length;
+            img.src = urls[idx];
+            if (ctr) ctr.textContent = idx + 1;
+            thumbs.forEach(function(t, j) { t.style.borderColor = j === idx ? '#00ff99' : '#2a1a4a'; });
+        }
+        if (prev) prev.addEventListener('click', function(e) { e.stopPropagation(); show(idx - 1); });
+        if (next) next.addEventListener('click', function(e) { e.stopPropagation(); show(idx + 1); });
+        wrap.addEventListener('mouseenter', function() {
+            if (prev) prev.style.opacity = '1'; if (next) next.style.opacity = '1';
+        });
+        wrap.addEventListener('mouseleave', function() {
+            if (prev) prev.style.opacity = '0'; if (next) next.style.opacity = '0';
+        });
+        thumbs.forEach(function(t) { t.addEventListener('click', function() { show(parseInt(this.dataset.index)); }); });
+    })();
+    </script>
+    {% endif %}
+
+    {% if map_embed_url %}
+    <div class="glassmorphism rounded-xl p-6 mt-6" style="border-color: #00ffff;">
+        <h4 class="text-sm font-semibold text-white mb-2">Location</h4>
+        <div class="rounded-lg overflow-hidden h-48">
+            <iframe width="100%" height="100%" frameborder="0" scrolling="no" src="{{ map_embed_url }}" style="border:0;" allowfullscreen></iframe>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

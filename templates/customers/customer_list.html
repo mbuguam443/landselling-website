@@ -1,0 +1,50 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block page_title %}Customer Management{% endblock %}
+
+{% block content %}
+<div class="glassmorphism rounded-xl p-6 glow-border">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+        <div>
+            <h3 class="text-lg font-semibold text-white">All Customers</h3>
+            {% include 'components/filter_bar.html' %}
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="{% url 'customers:customer_create' %}" class="btn-primary text-sm py-2 whitespace-nowrap">Add Customer</a>
+        </div>
+    </div>
+    <div class="overflow-x-auto">
+        <table id="customerTable" class="w-full text-sm">
+            <thead>
+                <tr class="border-b text-left" style="border-color: #2a1a4a;">
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=name&order={% if sort_field == 'name' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Name {% if sort_field == 'name' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=email&order={% if sort_field == 'email' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Email {% if sort_field == 'email' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=phone&order={% if sort_field == 'phone' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Phone {% if sort_field == 'phone' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=city&order={% if sort_field == 'city' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">City {% if sort_field == 'city' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=is_verified&order={% if sort_field == 'is_verified' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Verified {% if sort_field == 'is_verified' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customer in page_obj %}
+                <tr class="border-b" style="border-color: #2a1a4a;">
+                    <td class="py-3"><a href="{% url 'customers:customer_detail' customer.id %}" class="text-white hover:text-primary transition">{{ customer.name }}</a></td>
+                    <td class="py-3" style="color: #94a3b8;">{{ customer.email }}</td>
+                    <td class="py-3" style="color: #94a3b8;">{{ customer.phone }}</td>
+                    <td class="py-3" style="color: #94a3b8;">{{ customer.city|default:'-' }}</td>
+                    <td class="py-3">{% if customer.is_verified %}<span style="color: #00ff99;">Yes</span>{% else %}<span style="color: #ff1744;">No</span>{% endif %}</td>
+                    <td class="py-3">
+                        <a href="{% url 'customers:customer_edit' customer.id %}" class="text-sm" style="color: #00ffff;">Edit</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="py-6 text-center" style="color: #4a4a6a;">No customers found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include 'components/pagination.html' %}
+</div>
+{% endblock %}

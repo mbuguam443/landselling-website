@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ report_type|title }} Report</title>
+    <style>
+        body { font-family: Helvetica, Arial, sans-serif; font-size: 11px; color: #333; }
+        h1 { text-align: center; font-size: 18px; margin-bottom: 5px; }
+        .meta { text-align: center; font-size: 11px; color: #666; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #1a0a2e; color: white; padding: 8px 6px; text-align: left; font-size: 10px; }
+        td { padding: 6px; border-bottom: 1px solid #ddd; }
+        tr:nth-child(even) { background: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <h1>{{ report_type|title }} Report</h1>
+    <p class="meta">Generated: {{ report_date|date:"d M Y H:i" }}</p>
+
+    {% if sales %}
+    <table>
+        <thead><tr>
+            <th>Customer</th>
+            <th>Plot</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Date</th>
+        </tr></thead>
+        <tbody>
+        {% for s in sales %}
+        <tr>
+            <td>{{ s.customer.name }}</td>
+            <td>{{ s.plot.plot_number }}</td>
+            <td>{{ s.selling_price|floatformat:0 }}</td>
+            <td>{{ s.status }}</td>
+            <td>{{ s.sale_date }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    {% if payments %}
+    <table>
+        <thead><tr>
+            <th>Receipt</th>
+            <th>Customer</th>
+            <th>Amount</th>
+            <th>Method</th>
+            <th>Status</th>
+            <th>Date</th>
+        </tr></thead>
+        <tbody>
+        {% for p in payments %}
+        <tr>
+            <td>{{ p.receipt_number }}</td>
+            <td>{{ p.customer.name }}</td>
+            <td>{{ p.amount|floatformat:0 }}</td>
+            <td>{{ p.payment_method }}</td>
+            <td>{{ p.status }}</td>
+            <td>{{ p.payment_date }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    {% if customers %}
+    <table>
+        <thead><tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>City</th>
+            <th>Joined</th>
+        </tr></thead>
+        <tbody>
+        {% for c in customers %}
+        <tr>
+            <td>{{ c.name }}</td>
+            <td>{{ c.email }}</td>
+            <td>{{ c.phone }}</td>
+            <td>{{ c.city }}</td>
+            <td>{{ c.created_at|date:"d M Y" }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    {% if plots %}
+    <table>
+        <thead><tr>
+            <th>Plot #</th>
+            <th>Project</th>
+            <th>Size</th>
+            <th>Price</th>
+            <th>Status</th>
+        </tr></thead>
+        <tbody>
+        {% for p in plots %}
+        <tr>
+            <td>{{ p.plot_number }}</td>
+            <td>{{ p.project.name }}</td>
+            <td>{{ p.size_sqm }} sqm</td>
+            <td>{{ p.price|floatformat:0 }}</td>
+            <td>{{ p.get_status_display }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</body>
+</html>
