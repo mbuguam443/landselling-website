@@ -123,3 +123,23 @@ def home(request):
 
     # Customer dashboard
     customer = Customer.objects.filter(user=user).first()
+    sales_qs = Sale.objects.filter(customer=customer).order_by('-created_at') if customer else Sale.objects.none()
+    payments_qs = Payment.objects.filter(customer=customer).order_by('-created_at') if customer else Payment.objects.none()
+    total_paid = payments_qs.filter(status='confirmed').aggregate(total=Sum('amount'))['total'] or 0
+    remaining_balance = 0
+    active_sale = sales_qs.filter(status='active').first()
+    if active_sale:
+        remaining_balance = active_sale.selling_price - total_paid
+        if remaining_balance < 0:
+            remaining_balance = 0
+    sales = list(sales_qs[:5])
+    payments = list(payments_qs[:5])
+    notifications = Notification.objects.filter(recipient=user).order_by('-created_at')[:5]
+    return render(request, 'dashboard/customer_dashboard.html', {
+        'customer': customer,
+        'sales': sales,
+        'payments': payments,
+        'notifications': notifications,
+        'total_paid': total_paid,
+        'remaining_balance': remaining_balance,
+    })
