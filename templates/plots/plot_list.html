@@ -41,7 +41,55 @@
                 </div>
                 {% else %}
                 <div class="h-48 flex items-center justify-center" style="background: #1a0a2e;">
-                    <svg class="w-12 h-12" style="color: #4a4a6a;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <!-- Use image from landImage folder based on distributed selection -->
+                    {% with plot_id=plot.id %}
+                    {% if plot_id > 0 %}
+                      {% if plot_id|divisibleby:20 %}
+                        <img src="/landImage/land20.jpg" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover">
+                      {% elif plot_id|divisibleby:19 %}
+                        <img src="/landImage/land19.jpg" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover">
+                      {% elif plot_id|divisibleby:18 %}
+                        <img src="/landImage/land18.jpg" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover">
+                      {% elif plot_id|divisibleby:17 %}
+                        <img src="/landImage/land17.jpg" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover">
+                      {% elif plot_id|divisibleby:16 %}
+                        <img src="/landImage/land16.jpg" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover">
+                      {% elif plot_id|divisibleby:15 %}
+                        <img src="/landImage/land15.jpg" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover">
+                      {% elif plot_id|divisibleby:14 %}
+                        <img src="/landImage/land14.jpg" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover">
+                      {% elif plot_id|divisibleby:13 %}
+                        <img src="/landImage/land13.jpg" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover">
+                      {% elif plot_id|divisibleby:12 %}
+                        <img src="/landImage/land12.jpg" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover">
+                      {% elif plot_id|divisibleby:11 %}
+                        <img src="/landImage/land11.jpg" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover">
+                      {% elif plot_id|divisibleby:10 %}
+                        <img src="/landImage/land10.jpg" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover">
+                      {% elif plot_id|divisibleby:9 %}
+                        <img src="/landImage/land9.jpg" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover">
+                      {% elif plot_id|divisibleby:8 %}
+                        <img src="/landImage/land8.jpg" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover">
+                      {% elif plot_id|divisibleby:7 %>
+                        <img src="/landImage/land7.jpg" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover">
+                      {% elif plot_id|divisibleby:6 %}
+                        <img src="/landImage/land6.jpg" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover">
+                      {% elif plot_id|divisibleby:5 %}
+                        <img src="/landImage/land5.jpg" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover">
+                      {% elif plot_id|divisibleby:4 %}
+                        <img src="/landImage/land4.jpg" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover">
+                      {% elif plot_id|divisibleby:3 %}
+                        <img src="/landImage/land3.jpg" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover">
+                      {% elif plot_id|divisibleby:2 %}
+                        <img src="/landImage/land2.jpg" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover">
+                      {% else %}
+                        <img src="/landImage/land1.jpg" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover">
+                      {% endif %}
+                    {% else %}
+                    <!-- Fallback to a default image if plot ID is invalid -->
+                    <img src="/landImage/land1.jpg" alt="Plot {{ plot.plot_number }}" class="w-full h-full object-cover">
+                    {% endif %}
+                    {% endwith %}
                 </div>
                 {% endif %}
                 {% endwith %}

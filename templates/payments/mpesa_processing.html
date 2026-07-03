@@ -75,9 +75,24 @@
 {% if not simulated %}
 <script>
 (function() {
+    var maxAttempts = 20;
+    var attempts = 0;
     var pollInterval = setInterval(function() {
+        attempts++;
+        if (attempts >= maxAttempts) {
+            clearInterval(pollInterval);
+            var statusEl = document.getElementById('auto-status');
+            statusEl.textContent = 'Payment check timed out. Please check your phone for the STK push or try again.';
+            statusEl.style.color = '#ff0000';
+            return;
+        }
         fetch('{% url 'payments:mpesa_poll_status' %}')
-            .then(function(r) { return r.json(); })
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(function(data) {
                 var statusEl = document.getElementById('auto-status');
                 if (data.status === 'completed' || data.status === 'confirmed') {
@@ -90,18 +105,22 @@
                     statusEl.style.color = '#ff00ff';
                     clearInterval(pollInterval);
                 } else if (data.status === 'pending') {
-                    var dots = statusEl.textContent.replace(/[^.]/g, '').length;
-                    dots = (dots % 3) + 1;
-                    statusEl.textContent = 'Listening for confirmation' + '.'.repeat(dots);
+                    var dots = (attempts % 3); // 0,1,2 then repeat
+                    statusEl.textContent = 'Listening for confirmation' + '.'.repeat(dots + 1);
                 }
             })
-            .catch(function() {
+            .catch(function(err) {
+                console.error('Error:', err);
                 var statusEl = document.getElementById('auto-status');
-                statusEl.textContent = 'Still waiting...';
+                statusEl.textContent = 'Error checking payment status. Retrying...';
+                statusEl.style.color = '#ffa500';
             });
     }, 3000);
 
-    setTimeout(function() { clearInterval(pollInterval); }, 120000);
+    // Clean up on page unload
+    window.addEventListener('beforeunload', function() {
+        clearInterval(pollInterval);
+    });
 })();
 </script>
 <style>

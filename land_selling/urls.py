@@ -1,23 +1,9 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf import settings
+from django.conf.urls.static import static
 from django.views.static import serve
-from django.http import FileResponse, Http404
-import os
-
-def media_serve(request, path):
-    file_path = settings.MEDIA_ROOT / path
-    if not os.path.exists(file_path):
-        file_path = settings.BASE_DIR / 'landImage' / path
-    if not os.path.exists(file_path):
-        raise Http404('File not found')
-    response = FileResponse(open(file_path, 'rb'))
-    response['Content-Type'] = 'image/jpeg' if path.lower().endswith(('.jpg', '.jpeg')) else \
-                               'image/png' if path.lower().endswith('.png') else \
-                               'image/svg+xml' if path.lower().endswith('.svg') else \
-                               'application/pdf' if path.lower().endswith('.pdf') else \
-                               'application/octet-stream'
-    return response
+from apps.views import serve_land_image
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -34,6 +20,9 @@ urlpatterns = [
     path('dashboard/', include('apps.dashboard.urls')),
     path('settings/', include('apps.settings.urls')),
     path('subscriptions/', include('apps.subscriptions.urls')),
+    # Serve land images from landImage directory
+    path('landImage/<str:filename>', serve_land_image, name='serve_land_image'),
 ]
 
-urlpatterns += [re_path(r'^media/(?P<path>.*)$', media_serve)]
+# Serve media files via Django (works in both dev and production)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

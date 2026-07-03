@@ -1,0 +1,4 @@
+1) Mpesa confirm not sent to safaricom
+2)customer verification should come during purchase of land
+3)images under available plot not there on render
+4)

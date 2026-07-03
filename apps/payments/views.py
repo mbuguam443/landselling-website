@@ -268,15 +268,44 @@ def mpesa_complete(request):
         return redirect('payments:mpesa_payment')
 
     from .models import MpesaTransaction
-    from .mpesa import simulate_callback
+    from .mpesa import simulate_callback, query_stk_status, get_auth_token
+    from django.conf import settings
     from .services import process_payment
+    from django.utils import timezone
 
     payment = get_object_or_404(Payment, pk=payment_id, customer__user=request.user)
 
     try:
         mpesa_txn = MpesaTransaction.objects.get(payment=payment)
-        callback_data = simulate_callback(checkout_id or mpesa_txn.checkout_request_id)
-        body = callback_data['Body']['stkCallback']
+        
+        # Check if we're in simulation mode
+        consumer_key = getattr(settings, 'MPESA_CONSUMER_KEY', None)
+        consumer_secret = getattr(settings, 'MPESA_CONSUMER_SECRET', None)
+        passkey = getattr(settings, 'MPESA_PASSKEY', None)
+        is_simulation = not (consumer_key and consumer_secret and passkey)
+        
+        if is_simulation:
+            # Use simulation for demo/testing
+            callback_data = simulate_callback(checkout_id or mpesa_txn.checkout_request_id)
+            body = callback_data['Body']['stkCallback']
+        else:
+            # Query Safaricom for real status
+            response_data = query_stk_status(checkout_id or mpesa_txn.checkout_request_id)
+            # Format response to match callback structure
+            body = {
+                'ResultCode': response_data.get('ResultCode', '1'),
+                'ResultDesc': response_data.get('ResultDesc', ''),
+                'CallbackMetadata': {
+                    'Item': [
+                        {'Name': 'Amount', 'Value': response_data.get('Amount')},
+                        {'Name': 'MpesaReceiptNumber', 'Value': response_data.get('MpesaReceiptNumber', '')},
+                        {'Name': 'Balance', 'Value': response_data.get('Balance')},
+                        {'Name': 'TransactionDate', 'Value': response_data.get('TransactionDate')},
+                        {'Name': 'PhoneNumber', 'Value': response_data.get('PhoneNumber')}
+                    ]
+                }
+            }
+
         items = {i['Name']: i['Value'] for i in body.get('CallbackMetadata', {}).get('Item', [])}
 
         mpesa_txn.transaction_type = 'callback'
@@ -284,7 +313,7 @@ def mpesa_complete(request):
         mpesa_txn.result_description = body['ResultDesc']
         mpesa_txn.mpesa_receipt_number = items.get('MpesaReceiptNumber', '')
         mpesa_txn.transaction_date = timezone.now()
-        mpesa_txn.raw_callback_data = callback_data
+        mpesa_txn.raw_callback_data = response_data if not is_simulation else callback_data
         mpesa_txn.status = 'success' if body['ResultCode'] == '0' else 'failed'
         mpesa_txn.save()
 

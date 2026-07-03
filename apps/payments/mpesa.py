@@ -47,7 +47,7 @@ def stk_push(phone_number, amount, account_ref, transaction_desc='Land Payment')
     passkey = getattr(settings, 'MPESA_PASSKEY', None)
     shortcode = getattr(settings, 'MPESA_SHORTCODE', '174379')
     callback_url = getattr(settings, 'MPESA_CALLBACK_URL',
-                           'https://9cc3-102-205-50-218.ngrok-free.app/payments/mpesa/callback/')
+                           'https://6248-102-205-50-218.ngrok-free.app/payments/mpesa/callback/')
 
     try:
         from apps.settings.models import CompanySetting
