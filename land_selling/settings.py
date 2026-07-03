@@ -125,9 +125,10 @@ COMPANY_EMAIL = 'info@primelands.com'
 COMPANY_PHONE = '+254 700 000 000'
 COMPANY_ADDRESS = '99 Westlands Rd, Nairobi, Kenya'
 
-# M-Pesa Daraja API (Sandbox)
-MPESA_CONSUMER_KEY = '0GPg2z14A6LmnOAEMmFUJDlz7yYxMQEQNavDRWCBaD8PGcNo'
-MPESA_CONSUMER_SECRET = 'D5XAaxpsX6D830m3imcl165raamoralJZk4bh3dcRAzxN52Glc70iH29OMGvOzVu'
-MPESA_PASSKEY = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919'
-MPESA_SHORTCODE = '174379'
-MPESA_CALLBACK_URL = 'https://9cc3-102-205-50-218.ngrok-free.app/payments/mpesa/callback/'
+# M-Pesa Daraja API — all overridable via environment variables
+MPESA_BASE_URL = os.environ.get('MPESA_BASE_URL', 'https://sandbox.safaricom.co.ke')
+MPESA_CONSUMER_KEY = os.environ.get('MPESA_CONSUMER_KEY', '0GPg2z14A6LmnOAEMmFUJDlz7yYxMQEQNavDRWCBaD8PGcNo')
+MPESA_CONSUMER_SECRET = os.environ.get('MPESA_CONSUMER_SECRET', 'D5XAaxpsX6D830m3imcl165raamoralJZk4bh3dcRAzxN52Glc70iH29OMGvOzVu')
+MPESA_PASSKEY = os.environ.get('MPESA_PASSKEY', 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919')
+MPESA_SHORTCODE = os.environ.get('MPESA_SHORTCODE', '174379')
+MPESA_CALLBACK_URL = os.environ.get('MPESA_CALLBACK_URL', 'https://9cc3-102-205-50-218.ngrok-free.app/payments/mpesa/callback/')

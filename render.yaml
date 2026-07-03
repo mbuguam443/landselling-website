@@ -13,5 +13,9 @@ services:
         value: "prime-land-ltd.onrender.com,.onrender.com"
       - key: CSRF_TRUSTED_ORIGINS
         value: "https://prime-land-ltd.onrender.com"
+      - key: MPESA_BASE_URL
+        value: "https://sandbox.safaricom.co.ke"
+      - key: MPESA_CALLBACK_URL
+        value: "https://prime-land-ltd.onrender.com/payments/mpesa/callback/"
       - key: PYTHON_VERSION
         value: "3.12.5"

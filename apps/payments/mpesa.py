@@ -6,6 +6,10 @@ from django.conf import settings
 from django.utils import timezone
 
 
+def get_base_url():
+    return getattr(settings, 'MPESA_BASE_URL', 'https://sandbox.safaricom.co.ke')
+
+
 def get_auth_token():
     """
     Get OAuth token from Safaricom Daraja API.
@@ -17,7 +21,8 @@ def get_auth_token():
     if not consumer_key or not consumer_secret:
         return 'SIMULATED_TOKEN_' + datetime.now().strftime('%Y%m%d%H%M%S')
 
-    api_url = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
+    base = get_base_url()
+    api_url = f'{base}/oauth/v1/generate?grant_type=client_credentials'
     try:
         response = requests.get(
             api_url,
@@ -97,8 +102,9 @@ def stk_push(phone_number, amount, account_ref, transaction_desc='Land Payment')
     }
 
     try:
+        base = get_base_url()
         response = requests.post(
-            'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
+            f'{base}/mpesa/stkpush/v1/processrequest',
             json=payload,
             headers={
                 'Authorization': f'Bearer {token}',
@@ -159,8 +165,9 @@ def query_stk_status(checkout_request_id):
     }
 
     try:
+        base = get_base_url()
         response = requests.post(
-            'https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query',
+            f'{base}/mpesa/stkpushquery/v1/query',
             json=payload,
             headers={
                 'Authorization': f'Bearer {token}',
