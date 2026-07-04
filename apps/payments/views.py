@@ -432,10 +432,18 @@ def mpesa_callback(request):
 
     payment = mpesa_txn.payment
     if payment and result_code == '0':
-        payment.transaction_code = items.get('MpesaReceiptNumber', '')
-        payment.mpesa_code = items.get('MpesaReceiptNumber', '')
+        receipt = items.get('MpesaReceiptNumber', '')
+        payment.transaction_code = receipt
+        payment.mpesa_code = receipt
+        payment.status = 'confirmed'
+        payment.confirmed_at = timezone.now()
         payment.save()
-        process_payment(payment)
+
+        try:
+            process_payment(payment)
+        except Exception as e:
+            import logging
+            logging.error(f'process_payment callback error for payment #{payment.pk}: {e}')
 
     return HttpResponse('{"ResultCode":0,"ResultDesc":"Success"}', content_type='application/json')
 
