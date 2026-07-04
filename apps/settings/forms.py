@@ -22,13 +22,13 @@ class CompanySettingForm(forms.ModelForm):
             'social_twitter': forms.URLInput(attrs={'class': 'input-field'}),
             'social_instagram': forms.URLInput(attrs={'class': 'input-field'}),
             'social_linkedin': forms.URLInput(attrs={'class': 'input-field'}),
-            'deposit_percentage_default': forms.NumberInput(attrs={'class': 'input-field'}),
+            'deposit_percentage_default': forms.NumberInput(attrs={'class': 'input-field', 'step': '0.01'}),
             'installment_months_default': forms.NumberInput(attrs={'class': 'input-field'}),
-            'interest_rate_default': forms.NumberInput(attrs={'class': 'input-field'}),
+            'interest_rate_default': forms.NumberInput(attrs={'class': 'input-field', 'step': '0.01'}),
             'receipt_prefix': forms.TextInput(attrs={'class': 'input-field'}),
             'currency_symbol': forms.TextInput(attrs={'class': 'input-field'}),
             'mpesa_callback_url': forms.URLInput(attrs={'class': 'input-field'}),
-            'commission_percentage': forms.NumberInput(attrs={'class': 'input-field'}),
+            'commission_percentage': forms.NumberInput(attrs={'class': 'input-field', 'step': '0.01'}),
         }
 
 

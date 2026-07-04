@@ -71,7 +71,19 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="glassmorphism rounded-xl p-6" style="border-color: #ff00ff;">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-sm" style="color: #4a4a6a;">Agent Revenue</p>
+                    <p class="text-xl lg:text-2xl font-bold mt-1 truncate" style="color: #ff00ff;">KSh {{ total_agent_revenue|currency }}</p>
+                    <p class="text-xs mt-1" style="color: #4a4a6a;">{{ agent_revenue|length }} agent{{ agent_revenue|length|pluralize }}</p>
+                </div>
+                <div class="w-10 h-10 rounded-lg" style="background: rgba(255, 0, 255, 0.15); display: flex; align-items: center; justify-content: center;">
+                    <svg class="w-5 h-5" style="color: #ff00ff;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                </div>
+            </div>
+        </div>
         <div class="glassmorphism rounded-xl p-6" style="border-color: #00ffff;">
             <div class="flex justify-between items-start">
                 <div>
@@ -139,6 +151,37 @@
             <canvas id="salesChart" height="200"></canvas>
         </div>
     </div>
+
+    {% if agent_revenue %}
+    <div class="glassmorphism rounded-xl p-6 glow-border">
+        <h3 class="text-lg font-semibold text-white mb-4">Revenue Per Agent</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <th class="text-left py-3 px-4 font-semibold" style="color: #4a4a6a;">Agent</th>
+                        <th class="text-right py-3 px-4 font-semibold" style="color: #4a4a6a;">Sales</th>
+                        <th class="text-right py-3 px-4 font-semibold" style="color: #4a4a6a;">Total Revenue</th>
+                        <th class="text-right py-3 px-4 font-semibold" style="color: #4a4a6a;">% of Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for agent in agent_revenue %}
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <td class="py-3 px-4">
+                            <p class="font-medium text-white">{{ agent.display_name }}</p>
+                            <p class="text-xs" style="color: #4a4a6a;">@{{ agent.sale__sales_agent__username }}</p>
+                        </td>
+                        <td class="py-3 px-4 text-right text-white">{{ agent.sale_count }}</td>
+                        <td class="py-3 px-4 text-right font-semibold" style="color: #00ff99;">KSh {{ agent.total|currency }}</td>
+                        <td class="py-3 px-4 text-right" style="color: #4a4a6a;">{% widthratio agent.total total_agent_revenue 100 %}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="glassmorphism rounded-xl p-6 glow-border">

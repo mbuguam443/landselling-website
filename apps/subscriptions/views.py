@@ -90,10 +90,18 @@ def subscribe_to_plan(request, plan_id):
     plan = get_object_or_404(SubscriptionPlan, pk=plan_id, is_active=True)
     from django.utils import timezone
     now = timezone.now().date()
-    active = Subscription.objects.filter(user=request.user, is_active=True, end_date__gte=now).first()
+
+    # Block if agent already has ANY active subscription (even if expired but not yet deactivated)
+    active = Subscription.objects.filter(user=request.user, is_active=True).first()
     if active:
         messages.info(request, f'You already have an active subscription ({active.plan}) until {active.end_date}.')
         return redirect('subscriptions:my_subscription')
+
+    # Deactivate any old subscriptions that should have expired
+    Subscription.objects.filter(
+        user=request.user, is_active=True, end_date__lt=now
+    ).update(is_active=False)
+
     end_date = now + timezone.timedelta(days=plan.duration_days)
     sub = Subscription.objects.create(
         user=request.user,
@@ -139,3 +147,78 @@ def confirm_sub_payment(request, pk):
     payment.save()
     messages.success(request, 'Subscription payment confirmed.')
     return redirect('subscriptions:sub_payment_list')
+
+
+@login_required
+@admin_required
+def sub_payment_create(request):
+    from django.utils import timezone
+    from .forms import SubscriptionPaymentForm
+
+    if request.method == 'POST':
+        form = SubscriptionPaymentForm(request.POST)
+        if form.is_valid():
+            payment = form.save(commit=False)
+            payment.confirmed_by = request.user
+            payment.status = 'confirmed'
+            payment.receipt_number = f'SUB-{timezone.now().strftime("%Y%m%d")}-{payment.pk or "0001"}'
+            payment.save()
+            messages.success(request, f'Payment of KSh {payment.amount} recorded for {payment.user.get_full_name() or payment.user.username}.')
+            return redirect('subscriptions:sub_payment_list')
+    else:
+        form = SubscriptionPaymentForm()
+
+    return render(request, 'subscriptions/sub_payment_form.html', {'form': form})
+
+
+@login_required
+@admin_required
+def subscription_switch(request, pk):
+    sub = get_object_or_404(Subscription, pk=pk)
+    from django.utils import timezone
+    now = timezone.now().date()
+
+    if request.method == 'POST':
+        new_plan_id = request.POST.get('new_plan_id')
+        if not new_plan_id:
+            messages.error(request, 'Please select a new plan.')
+            return redirect('subscriptions:subscription_switch', pk=pk)
+
+        new_plan = get_object_or_404(SubscriptionPlan, pk=new_plan_id, is_active=True)
+
+        # Deactivate old subscription
+        sub.is_active = False
+        sub.notes = f'Switched to {new_plan.name} by {request.user.username} on {now}'
+        sub.save()
+
+        # Create new subscription
+        end_date = now + timezone.timedelta(days=new_plan.duration_days)
+        new_sub = Subscription.objects.create(
+            user=sub.user,
+            plan=new_plan,
+            start_date=now,
+            end_date=end_date,
+            is_active=True,
+            notes=f'Switched from {sub.plan.name} by {request.user.username}',
+        )
+
+        # Create payment record for fixed plans
+        if new_plan.plan_type == 'fixed':
+            SubscriptionPayment.objects.create(
+                subscription=new_sub,
+                user=sub.user,
+                amount=new_plan.price,
+                payment_method='mpesa',
+                status='confirmed',
+                confirmed_by=request.user,
+                notes=f'Admin switch from {sub.plan.name}',
+            )
+
+        messages.success(request, f'{sub.user.get_full_name() or sub.user.username} switched from {sub.plan.name} to {new_plan.name}.')
+        return redirect('subscriptions:subscription_list')
+
+    plans = SubscriptionPlan.objects.filter(is_active=True).exclude(pk=sub.plan_id)
+    return render(request, 'subscriptions/subscription_switch.html', {
+        'subscription': sub,
+        'plans': plans,
+    })

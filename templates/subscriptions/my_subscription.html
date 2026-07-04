@@ -69,7 +69,9 @@
                     {% if plan.plan_type == 'percentage' %}commission per sale{% else %}per month{% endif %}
                 </p>
                 <p class="text-sm mt-3" style="color: #b0b0d0;">{{ plan.description|truncatewords:20 }}</p>
-                {% if active_sub %}
+                {% if active_sub and active_sub.plan.id == plan.id %}
+                <span class="btn-secondary mt-4 text-sm py-2 w-full inline-block text-center opacity-100" style="background: rgba(0,255,153,0.15); border-color: #00ff99; color: #00ff99;">Current Plan</span>
+                {% elif active_sub %}
                 <button disabled class="btn-secondary mt-4 text-sm py-2 w-full opacity-50">Already Subscribed</button>
                 {% else %}
                 <a href="{% url 'subscriptions:subscribe_to_plan' plan.pk %}" class="btn-primary mt-4 text-sm py-2 w-full">Subscribe</a>

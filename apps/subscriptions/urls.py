@@ -11,6 +11,7 @@ urlpatterns = [
 
     # Subscriptions (admin view all)
     path('', views.subscription_list, name='subscription_list'),
+    path('<int:pk>/switch/', views.subscription_switch, name='subscription_switch'),
 
     # Staff: my subscription
     path('my/', views.my_subscription, name='my_subscription'),
@@ -18,5 +19,6 @@ urlpatterns = [
 
     # Payments
     path('payments/', views.sub_payment_list, name='sub_payment_list'),
+    path('payments/create/', views.sub_payment_create, name='sub_payment_create'),
     path('payments/<int:pk>/confirm/', views.confirm_sub_payment, name='confirm_sub_payment'),
 ]

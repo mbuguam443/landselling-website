@@ -42,7 +42,7 @@
             <div class="space-y-3">
                 {% for sp in sub_payments %}
                 <div class="flex justify-between text-sm">
-                    <span style="color: #b0b0d0;">{{ sp.user.get_full_name_or_username }}</span>
+                    <span style="color: #b0b0d0;">{{ sp.user.get_full_name|default:sp.user.username }}</span>
                     <span style="color: #ff00ff;">KSh {{ sp.amount|currency }}</span>
                 </div>
                 {% empty %}
@@ -60,4 +60,41 @@
         <a href="{% url 'reports:export_report' 'payments' 'csv' %}" class="btn-secondary text-sm py-2">Export Sales Revenue</a>
     </div>
 </div>
+
+{% if agent_revenue %}
+<div class="glassmorphism rounded-xl p-6 glow-border mt-6">
+    <h3 class="text-lg font-semibold text-white mb-4">Revenue Per Agent</h3>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <th class="text-left py-3 px-4 font-semibold" style="color: #4a4a6a;">Agent</th>
+                    <th class="text-right py-3 px-4 font-semibold" style="color: #4a4a6a;">Sales</th>
+                    <th class="text-right py-3 px-4 font-semibold" style="color: #4a4a6a;">Total Revenue</th>
+                    <th class="text-right py-3 px-4 font-semibold" style="color: #4a4a6a;">% of Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for agent in agent_revenue %}
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <td class="py-3 px-4">
+                        <p class="font-medium text-white">{{ agent.display_name }}</p>
+                        <p class="text-xs" style="color: #4a4a6a;">@{{ agent.sale__sales_agent__username }}</p>
+                    </td>
+                    <td class="py-3 px-4 text-right text-white">{{ agent.sale_count }}</td>
+                    <td class="py-3 px-4 text-right font-semibold" style="color: #00ff99;">KSh {{ agent.total|currency }}</td>
+                    <td class="py-3 px-4 text-right" style="color: #4a4a6a;">{% widthratio agent.total total_agent_revenue 100 %}%</td>
+                </tr>
+                {% endfor %}
+                <tr style="border-top: 2px solid rgba(0,255,153,0.3);">
+                    <td class="py-3 px-4 font-semibold text-white">Total</td>
+                    <td class="py-3 px-4 text-right text-white font-semibold">{{ agent_revenue|length }} agent{{ agent_revenue|length|pluralize }}</td>
+                    <td class="py-3 px-4 text-right font-bold" style="color: #00ff99;">KSh {{ total_agent_revenue|currency }}</td>
+                    <td class="py-3 px-4 text-right"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
 {% endblock %}

@@ -1,0 +1,95 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block page_title %}Switch Subscription{% endblock %}
+
+{% block breadcrumbs %}
+<nav class="flex mb-6" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 md:space-x-3 text-sm">
+        <li><a href="{% url 'dashboard:home' %}" class="text-gray-400 hover:text-white">Dashboard</a></li>
+        <li><span class="mx-2 text-gray-500">/</span></li>
+        <li><a href="{% url 'subscriptions:subscription_list' %}" class="text-gray-400 hover:text-white">Subscriptions</a></li>
+        <li><span class="mx-2 text-gray-500">/</span></li>
+        <li class="text-[#00ff99]">Switch Plan</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="glassmorphism rounded-xl p-6 glow-border">
+        <h1 class="text-2xl font-bold text-white mb-2">Switch Subscription Plan</h1>
+        <p class="text-sm mb-6" style="color: #94a3b8;">
+            Switching plan for <strong class="text-white">{{ subscription.user.get_full_name|default:subscription.user.username }}</strong>
+        </p>
+
+        <!-- Current Plan -->
+        <div class="mb-6 p-4 rounded-lg" style="background: rgba(0, 255, 153, 0.1); border: 1px solid rgba(0, 255, 153, 0.3);">
+            <p class="text-xs font-semibold uppercase mb-2" style="color: #00ff99;">Current Plan</p>
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="text-lg font-bold text-white">{{ subscription.plan.name }}</p>
+                    <p class="text-sm" style="color: #94a3b8;">
+                        {% if subscription.plan.plan_type == 'percentage' %}
+                        {{ subscription.plan.commission_percentage }}% commission per sale
+                        {% else %}
+                        KSh {{ subscription.plan.price|currency }}/month
+                        {% endif %}
+                    </p>
+                </div>
+                <span class="text-xs font-semibold px-2 py-1 rounded-full" style="background: rgba(0, 255, 153, 0.15); color: #00ff99;">
+                    Ends {{ subscription.end_date }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Switch Form -->
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-sm font-medium mb-2" style="color: #b0b0d0;">Select New Plan</label>
+                <div class="space-y-3">
+                    {% for plan in plans %}
+                    <label class="flex items-center gap-3 p-4 rounded-lg cursor-pointer transition" style="background: rgba(255,255,255,0.03); border: 1px solid #2a1a4a;" onmouseover="this.style.borderColor='#00ff99'" onmouseout="this.style.borderColor='#2a1a4a'">
+                        <input type="radio" name="new_plan_id" value="{{ plan.id }}" required class="w-4 h-4" style="accent-color: #00ff99;">
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center">
+                                <p class="font-semibold text-white">{{ plan.name }}</p>
+                                <p class="text-lg font-bold" style="color: #00ff99;">
+                                    {% if plan.plan_type == 'percentage' %}
+                                    {{ plan.commission_percentage }}%
+                                    {% else %}
+                                    KSh {{ plan.price|currency }}
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <p class="text-sm" style="color: #94a3b8;">
+                                {% if plan.plan_type == 'percentage' %}
+                                Commission per sale
+                                {% else %}
+                                Per month
+                                {% endif %}
+                                &middot; {{ plan.duration_days }} days duration
+                            </p>
+                            {% if plan.description %}
+                            <p class="text-xs mt-1" style="color: #4a4a6a;">{{ plan.description|truncatewords:15 }}</p>
+                            {% endif %}
+                        </div>
+                    </label>
+                    {% empty %}
+                    <p class="text-sm text-center py-4" style="color: #4a4a6a;">No other plans available.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="flex gap-3 pt-4">
+                <button type="submit" class="btn-primary py-2" onclick="return confirm('Are you sure you want to switch this agent\'s plan?')">
+                    Switch Plan
+                </button>
+                <a href="{% url 'subscriptions:subscription_list' %}" class="btn-secondary py-2">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

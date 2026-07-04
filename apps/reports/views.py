@@ -44,6 +44,7 @@ def payments_report(request):
 def revenue_report(request):
     from apps.payments.models import Payment
     from apps.subscriptions.models import SubscriptionPayment
+    from django.db.models import Sum, Count
     total_revenue = Payment.objects.filter(status='confirmed').aggregate(
         total=models.Sum('amount'))['total'] or 0
     total_commission = Sale.objects.filter(commission_paid=True).aggregate(
@@ -52,12 +53,31 @@ def revenue_report(request):
         total=models.Sum('amount'))['total'] or 0
     commission_sales = Sale.objects.filter(commission_amount__gt=0).select_related('customer', 'plot')[:20]
     sub_payments = SubscriptionPayment.objects.filter(status='confirmed').select_related('user')[:20]
+
+    agent_revenue = (
+        Payment.objects.filter(status='confirmed', sale__sales_agent__isnull=False)
+        .values(
+            'sale__sales_agent__id',
+            'sale__sales_agent__username',
+            'sale__sales_agent__first_name',
+            'sale__sales_agent__last_name',
+        )
+        .annotate(total=Sum('amount'), sale_count=Count('id'))
+        .order_by('-total')
+    )
+    for a in agent_revenue:
+        name = f"{a['sale__sales_agent__first_name']} {a['sale__sales_agent__last_name']}".strip()
+        a['display_name'] = name if name else a['sale__sales_agent__username']
+    total_agent_revenue = sum(a['total'] for a in agent_revenue)
+
     return render(request, 'reports/revenue_report.html', {
         'total_revenue': total_revenue,
         'total_commission': total_commission,
         'total_subscription': total_subscription,
         'commission_sales': commission_sales,
         'sub_payments': sub_payments,
+        'agent_revenue': agent_revenue,
+        'total_agent_revenue': total_agent_revenue,
     })
 
 

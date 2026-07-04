@@ -105,6 +105,23 @@ def get_admin_dashboard_context():
     ctx['monthly_collections'] = monthly
     ctx['overdue_summary'] = get_overdue_summary()
 
+    agent_revenue = (
+        Payment.objects.filter(status='confirmed', sale__sales_agent__isnull=False)
+        .values(
+            'sale__sales_agent__id',
+            'sale__sales_agent__username',
+            'sale__sales_agent__first_name',
+            'sale__sales_agent__last_name',
+        )
+        .annotate(total=Sum('amount'), sale_count=Count('id'))
+        .order_by('-total')
+    )
+    for a in agent_revenue:
+        name = f"{a['sale__sales_agent__first_name']} {a['sale__sales_agent__last_name']}".strip()
+        a['display_name'] = name if name else a['sale__sales_agent__username']
+    ctx['agent_revenue'] = agent_revenue
+    ctx['total_agent_revenue'] = sum(a['total'] for a in agent_revenue)
+
     return ctx
 
 

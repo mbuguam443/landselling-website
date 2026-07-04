@@ -59,7 +59,12 @@ def sale_create(request):
         form = SaleForm(request.POST)
         if form.is_valid():
             sale = form.save(commit=False)
-            sale.sales_agent = request.user
+            if request.user.role in ('super_admin', 'administrator'):
+                from apps.accounts.models import User
+                fallback_agent = User.objects.filter(role='sales_agent', is_active=True).first()
+                sale.sales_agent = fallback_agent
+            else:
+                sale.sales_agent = request.user
             sale.monthly_installment = sale.plot.monthly_installment(sale.installment_months)
             sale.save()
             log_audit(request.user, 'sale', model_name='Sale', object_id=sale.pk,
@@ -195,13 +200,19 @@ def reservation_convert(request, pk):
             messages.error(request, 'Invalid deposit amount or installment months.')
             return redirect('sales:reservation_convert', pk=pk)
 
+        if request.user.role in ('super_admin', 'administrator'):
+            from apps.accounts.models import User
+            fallback_agent = User.objects.filter(role='sales_agent', is_active=True).first()
+            agent_for_sale = fallback_agent
+        else:
+            agent_for_sale = request.user
         sale = Sale.objects.create(
             customer=reservation.customer,
             plot=reservation.plot,
             selling_price=reservation.plot.price,
             deposit_amount=deposit,
             installment_months=months,
-            sales_agent=request.user,
+            sales_agent=agent_for_sale,
             sale_date=timezone.now().date(),
             status='active',
         )

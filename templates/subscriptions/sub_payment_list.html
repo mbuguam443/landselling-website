@@ -5,7 +5,10 @@
 {% block page_title %}Subscription Payments{% endblock %}
 
 {% block content %}
-{% include 'components/filter_bar.html' with title='Subscription Payments' %}
+<div class="flex justify-between items-center mb-4">
+    {% include 'components/filter_bar.html' with title='Subscription Payments' %}
+    <a href="{% url 'subscriptions:sub_payment_create' %}" class="btn-primary text-sm py-2 whitespace-nowrap">Record Payment</a>
+</div>
 <div class="glassmorphism rounded-xl overflow-hidden glow-border">
     <table class="w-full">
         <thead>
@@ -24,7 +27,7 @@
             {% for p in page_obj %}
             <tr class="hover:bg-white/5 transition">
                 <td class="px-4 py-3">
-                    <p class="text-sm font-semibold text-white">{{ p.user.get_full_name_or_username }}</p>
+                    <p class="text-sm font-semibold text-white">{{ p.user.get_full_name|default:p.user.username }}</p>
                     <p class="text-xs" style="color: #4a4a6a;">{{ p.user.get_role_display }}</p>
                 </td>
                 <td class="px-4 py-3 text-sm" style="color: #00ffff;">{{ p.subscription.plan.name|default:'—' }}</td>

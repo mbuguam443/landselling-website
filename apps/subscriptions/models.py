@@ -41,9 +41,16 @@ class Subscription(models.Model):
 
     class Meta:
         ordering = ['-end_date']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'is_active'],
+                condition=models.Q(is_active=True),
+                name='unique_active_subscription_per_user'
+            )
+        ]
 
     def __str__(self):
-        return f"{self.user.get_full_name_or_username()} - {self.plan}"
+        return f"{self.user.get_full_name() or self.user.username} - {self.plan}"
 
     @property
     def days_remaining(self):
@@ -59,6 +66,8 @@ class Subscription(models.Model):
         return self.plan and self.plan.plan_type == 'percentage'
 
     def renew(self):
+        # Deactivate old subscription before creating new one
+        Subscription.objects.filter(user=self.user, is_active=True).update(is_active=False)
         new_start = self.end_date
         new_end = new_start + timezone.timedelta(days=self.plan.duration_days if self.plan else 30)
         return Subscription.objects.create(
