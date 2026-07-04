@@ -3,6 +3,11 @@
 {% load currency_filters %}
 
 {% block title %}Contact Us - Prime Lands Ltd{% endblock %}
+{% block meta_description %}{{ meta_description|default:"Contact Prime Lands Ltd for inquiries about land for sale in Kenya. Reach us via phone, email, or visit our office in Westlands, Nairobi." }}{% endblock %}
+{% block og_title %}{{ og_title|default:"Contact Us - Prime Lands Ltd" }}{% endblock %}
+{% block og_description %}{{ og_description|default:"Get in touch with Prime Lands Ltd for land purchase inquiries, site visits, and customer support." }}{% endblock %}
+{% block twitter_title %}{{ og_title|default:"Contact Us - Prime Lands Ltd" }}{% endblock %}
+{% block twitter_description %}{{ og_description|default:"Get in touch with Prime Lands Ltd for land purchase inquiries." }}{% endblock %}
 
 {% block content %}
 <div class="pt-24 pb-12 px-4">

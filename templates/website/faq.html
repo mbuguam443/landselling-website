@@ -3,6 +3,11 @@
 {% load currency_filters %}
 
 {% block title %}FAQs - Prime Lands Ltd{% endblock %}
+{% block meta_description %}{{ meta_description|default:"Frequently asked questions about buying land in Kenya with Prime Lands Ltd." }}{% endblock %}
+{% block og_title %}{{ og_title|default:"FAQs - Prime Lands Ltd" }}{% endblock %}
+{% block og_description %}{{ og_description|default:"Get answers to common questions about purchasing land, payment methods, and title deeds." }}{% endblock %}
+{% block twitter_title %}{{ og_title|default:"FAQs - Prime Lands Ltd" }}{% endblock %}
+{% block twitter_description %}{{ og_description|default:"Get answers to common questions about purchasing land at Prime Lands Ltd." }}{% endblock %}
 
 {% block content %}
 <div class="pt-24 pb-12 px-4">

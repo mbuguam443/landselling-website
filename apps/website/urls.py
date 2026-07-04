@@ -12,4 +12,5 @@ urlpatterns = [
     path('hire-purchase/', views.hire_purchase, name='hire_purchase'),
     path('blog/', views.blog, name='blog'),
     path('testimonials/', views.testimonials, name='testimonials'),
+    path('robots.txt', views.robots_txt, name='robots_txt'),
 ]

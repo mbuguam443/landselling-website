@@ -21,13 +21,35 @@ def project_list(request):
                                    allowed_fields=['name', 'location'],
                                    search_fields=['name', 'location'],
                                    per_page=12)
+    ctx['meta_description'] = 'Explore land development projects by Prime Lands Ltd. Find prime locations in Kenya with verified plots and flexible payment plans.'
+    ctx['og_title'] = 'Our Projects - Prime Lands Ltd'
+    ctx['og_description'] = 'Discover ongoing and completed land development projects by Prime Lands Ltd across Kenya.'
     return render(request, template, ctx)
 
 
 def project_detail(request, slug):
     project = get_object_or_404(Project, slug=slug)
+    og_image = project.image.url if project.image else None
     template = 'projects/admin_project_detail.html' if request.user.is_authenticated and request.user.is_staff_or_above() else 'projects/project_detail.html'
-    return render(request, template, {'project': project})
+    return render(request, template, {
+        'project': project,
+        'meta_description': f'{project.name} - {project.location}. {project.description|truncatewords:30 if project.description else f"{project.total_plots} plots available"}. View available plots at Prime Lands Ltd.',
+        'og_title': f'{project.name} - Prime Lands Ltd',
+        'og_description': f'{project.name} in {project.location}. {project.total_plots} plots available. Browse plots with flexible installment plans.',
+        'og_type': 'product',
+        'og_image': og_image,
+        'structured_data': {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            "name": project.name,
+            "description": project.description or f"Land development project in {project.location}",
+            "image": og_image,
+            "brand": {
+                "@type": "Organization",
+                "name": "Prime Lands Ltd"
+            }
+        }
+    })
 
 
 @login_required

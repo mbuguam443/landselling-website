@@ -3,6 +3,14 @@
 {% load currency_filters %}
 
 {% block title %}{{ project.name }} - Prime Lands Ltd{% endblock %}
+{% block meta_description %}{{ meta_description|default:"View project details at Prime Lands Ltd" }}{% endblock %}
+{% block og_title %}{{ og_title|default:project.name|add:" - Prime Lands Ltd" }}{% endblock %}
+{% block og_description %}{{ og_description|default:"View project details at Prime Lands Ltd" }}{% endblock %}
+{% block og_type %}{{ og_type|default:"website" }}{% endblock %}
+{% block og_image %}{{ og_image|default:'' }}{% endblock %}
+{% block twitter_title %}{{ og_title|default:project.name|add:" - Prime Lands Ltd" }}{% endblock %}
+{% block twitter_description %}{{ og_description|default:"View project details at Prime Lands Ltd" }}{% endblock %}
+{% block twitter_image %}{{ og_image|default:'' }}{% endblock %}
 
 {% block content %}
 <div class="pt-24 pb-12 px-4">
@@ -65,4 +73,12 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block structured_data %}
+{% if structured_data %}
+<script type="application/ld+json">
+{{ structured_data|safe }}
+</script>
+{% endif %}
 {% endblock %}

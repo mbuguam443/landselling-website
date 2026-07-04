@@ -176,6 +176,13 @@ def reservation_convert(request, pk):
         messages.error(request, 'Only active reservations can be converted.')
         return redirect('sales:reservation_detail', pk=pk)
 
+    if not reservation.customer.is_verified:
+        messages.error(request, f'Cannot convert: {reservation.customer.name} is not verified. Please verify the customer first.')
+        return render(request, 'sales/reservation_convert.html', {
+            'reservation': reservation,
+            'default_deposit': reservation.plot.price * 20 // 100,
+        })
+
     if request.method == 'POST':
         from django.utils import timezone
         from decimal import Decimal

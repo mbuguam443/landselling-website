@@ -38,6 +38,9 @@ def plot_list(request):
         {'label': 'Plots', 'url': ''},
     ]
     ctx['breadcrumbs'] = breadcrumbs
+    ctx['meta_description'] = 'Browse available plots for sale in Kenya. Find prime land in Nairobi and surrounding areas with flexible installment plans at Prime Lands Ltd.'
+    ctx['og_title'] = 'Available Plots for Sale - Prime Lands Ltd'
+    ctx['og_description'] = 'Explore verified plots for sale in Kenya. Affordable land with guaranteed title deeds and flexible payment plans.'
     template = 'plots/admin_plot_list.html' if request.user.is_authenticated and request.user.is_staff_or_above() else 'plots/plot_list.html'
     return render(request, template, ctx)
 
@@ -64,8 +67,38 @@ def plot_detail(request, pk):
             map_embed_url = f"https://www.openstreetmap.org/export/embed.html?bbox={lng-0.01},{lat-0.01},{lng+0.01},{lat+0.01}&layer=mapnik&marker={lat},{lng}"
         except (ValueError, AttributeError):
             pass
+
+    plot_image = plot.images.first()
+    og_image = plot_image.image.url if plot_image else None
+
     template = 'plots/admin_plot_detail.html' if request.user.is_authenticated and request.user.is_staff_or_above() else 'plots/plot_detail.html'
-    return render(request, template, {'plot': plot, 'breadcrumbs': breadcrumbs, 'map_embed_url': map_embed_url})
+    return render(request, template, {
+        'plot': plot,
+        'breadcrumbs': breadcrumbs,
+        'map_embed_url': map_embed_url,
+        'meta_description': f'Plot {plot.plot_number} in {plot.project.name}, {plot.project.location} - {plot.size_sqm} sqm at KSh {plot.price:,.0f}. {plot.get_status_display()} with flexible installment plans at Prime Lands Ltd.',
+        'og_title': f'Plot {plot.plot_number} - {plot.project.name} | Prime Lands Ltd',
+        'og_description': f'{plot.size_sqm} sqm plot in {plot.project.name}, {plot.project.location}. Price: KSh {plot.price:,.0f}. Status: {plot.get_status_display()}.',
+        'og_type': 'product',
+        'og_image': og_image,
+        'structured_data': {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            "name": f"Plot {plot.plot_number} - {plot.project.name}",
+            "description": f"{plot.size_sqm} sqm plot in {plot.project.name}, {plot.project.location}",
+            "image": og_image,
+            "offers": {
+                "@type": "Offer",
+                "price": str(plot.price),
+                "priceCurrency": "KES",
+                "availability": "https://schema.org/InStock" if plot.status == 'available' else "https://schema.org/OutOfOfStock",
+            },
+            "brand": {
+                "@type": "Organization",
+                "name": "Prime Lands Ltd"
+            }
+        }
+    })
 
 
 @login_required

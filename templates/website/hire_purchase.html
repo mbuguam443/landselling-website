@@ -3,6 +3,11 @@
 {% load currency_filters %}
 
 {% block title %}Hire Purchase - Prime Lands Ltd{% endblock %}
+{% block meta_description %}{{ meta_description|default:"Buy land through hire purchase at Prime Lands Ltd. Pay affordable monthly installments and own your dream plot." }}{% endblock %}
+{% block og_title %}{{ og_title|default:"Hire Purchase - Buy Land with Installments | Prime Lands Ltd" }}{% endblock %}
+{% block og_description %}{{ og_description|default:"Own your dream land with affordable monthly installments. Zero interest options available." }}{% endblock %}
+{% block twitter_title %}{{ og_title|default:"Hire Purchase - Buy Land with Installments | Prime Lands Ltd" }}{% endblock %}
+{% block twitter_description %}{{ og_description|default:"Own your dream land with affordable monthly installments at Prime Lands Ltd." }}{% endblock %}
 
 {% block content %}
 <div class="pt-24 pb-12 px-4">

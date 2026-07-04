@@ -2,8 +2,16 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.sitemaps.views import sitemap
 from django.views.static import serve
 from apps.views import serve_land_image
+from apps.website.sitemaps import StaticViewSitemap, PlotSitemap, ProjectSitemap
+
+sitemaps = {
+    'static': StaticViewSitemap,
+    'plots': PlotSitemap,
+    'projects': ProjectSitemap,
+}
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -22,6 +30,8 @@ urlpatterns = [
     path('subscriptions/', include('apps.subscriptions.urls')),
     # Serve land images from landImage directory
     path('landImage/<str:filename>', serve_land_image, name='serve_land_image'),
+    # SEO - Sitemap
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),
 ]
 
 # Serve media files in production (DEBUG=False)

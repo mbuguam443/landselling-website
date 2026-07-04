@@ -26,6 +26,31 @@
             (KSh {{ reservation.plot.price|currency }})
         </p>
 
+        {% if not reservation.customer.is_verified %}
+        <div class="mb-6 p-4 rounded-lg" style="background: rgba(255, 23, 68, 0.1); border: 1px solid rgba(255, 23, 68, 0.3);">
+            <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: #ff1744;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                <div>
+                    <p class="font-semibold" style="color: #ff1744;">Customer Not Verified</p>
+                    <p class="text-sm mt-1" style="color: #94a3b8;">
+                        {{ reservation.customer.name }} has not been verified yet. You must verify the customer before converting this reservation to a sale.
+                    </p>
+                    <div class="flex gap-2 mt-3">
+                        <a href="{% url 'customers:customer_verify' reservation.customer.pk %}" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium" style="background: rgba(0, 255, 153, 0.15); color: #00ff99; border: 1px solid rgba(0, 255, 153, 0.3);">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Verify Customer
+                        </a>
+                        <a href="{% url 'customers:customer_detail' reservation.customer.pk %}" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium" style="background: rgba(255, 255, 255, 0.05); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.1);">
+                            View Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
         <form method="post" class="space-y-4">
             {% csrf_token %}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -44,7 +69,11 @@
             </div>
 
             <div class="flex gap-3 pt-4">
+                {% if reservation.customer.is_verified %}
                 <button type="submit" class="btn-primary py-2">Create Sale</button>
+                {% else %}
+                <button type="submit" class="btn-primary py-2 opacity-50 cursor-not-allowed" disabled>Create Sale</button>
+                {% endif %}
                 <a href="{% url 'sales:reservation_detail' reservation.id %}" class="btn-secondary py-2">Back</a>
             </div>
         </form>

@@ -3,6 +3,11 @@
 {% load currency_filters %}
 
 {% block title %}Our Projects - Prime Lands Ltd{% endblock %}
+{% block meta_description %}{{ meta_description|default:"Explore land development projects by Prime Lands Ltd. Find prime locations in Kenya." }}{% endblock %}
+{% block og_title %}{{ og_title|default:"Our Projects - Prime Lands Ltd" }}{% endblock %}
+{% block og_description %}{{ og_description|default:"Discover ongoing and completed land development projects by Prime Lands Ltd." }}{% endblock %}
+{% block twitter_title %}{{ og_title|default:"Our Projects - Prime Lands Ltd" }}{% endblock %}
+{% block twitter_description %}{{ og_description|default:"Discover land development projects by Prime Lands Ltd." }}{% endblock %}
 
 {% block content %}
 <div class="pt-24 pb-12 px-4">

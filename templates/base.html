@@ -6,11 +6,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Prime Lands Ltd - Your Trusted Real Estate Partner{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Prime Lands Ltd offers prime land for sale in Kenya with flexible installment plans. Browse verified plots in Nairobi and surrounding areas with guaranteed title deeds.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}land for sale Kenya, plots for sale Nairobi, real estate Kenya, buy land Kenya, installment land purchase, title deed Kenya, Prime Lands{% endblock %}">
+    <meta name="author" content="Prime Lands Ltd">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{% block canonical %}{{ request.build_absolute_uri }}{% endblock %}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}Prime Lands Ltd - Your Trusted Real Estate Partner{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Prime Lands Ltd offers prime land for sale in Kenya with flexible installment plans. Browse verified plots with guaranteed title deeds.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{% static 'images/logo.svg' %}{% endblock %}">
+    <meta property="og:site_name" content="Prime Lands Ltd">
+    <meta property="og:locale" content="en_KE">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}Prime Lands Ltd - Your Trusted Real Estate Partner{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Prime Lands Ltd offers prime land for sale in Kenya with flexible installment plans.{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{% static 'images/logo.svg' %}{% endblock %}">
+
+    <!-- Favicon -->
+    {% if company and company.favicon %}
+    <link rel="icon" href="{{ company.favicon.url }}" type="image/png">
+    <link rel="apple-touch-icon" href="{{ company.favicon.url }}">
+    {% else %}
+    <link rel="icon" href="{% static 'images/logo.svg' %}" type="image/svg+xml">
+    {% endif %}
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
+
+    <!-- JSON-LD Structured Data -->
+    {% block structured_data %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "RealEstateAgent",
+        "name": "{{ company.company_name|default:'Prime Lands Ltd' }}",
+        "description": "{{ company.tagline|default:'Your Trusted Real Estate Partner' }}",
+        "url": "{{ request.scheme }}://{{ request.get_host }}",
+        "logo": "{% if company and company.logo %}{{ company.logo.url }}{% endif %}",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "{{ company.address|default:'99 Westlands Rd, Nairobi, Kenya' }}",
+            "addressCountry": "KE"
+        },
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "{{ company.phone|default:'+254 700 000 000' }}",
+            "contactType": "customer service",
+            "availableLanguage": "English"
+        },
+        "email": "{{ company.email|default:'info@primelands.com' }}",
+        "sameAs": [
+            "{% if company and company.social_facebook %}{{ company.social_facebook }}{% endif %}",
+            "{% if company and company.social_twitter %}{{ company.social_twitter }}{% endif %}",
+            "{% if company and company.social_instagram %}{{ company.social_instagram }}{% endif %}",
+            "{% if company and company.social_linkedin %}{{ company.social_linkedin }}{% endif %}"
+        ]
+    }
+    </script>
+    {% endblock %}
+
     <style>
         :root {
             --background: #0a0015;

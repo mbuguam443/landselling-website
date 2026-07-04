@@ -4,6 +4,11 @@
 {% load humanize %}
 
 {% block title %}Available Plots - Prime Lands Ltd{% endblock %}
+{% block meta_description %}{{ meta_description|default:"Browse available plots for sale in Kenya. Find prime land in Nairobi with flexible installment plans." }}{% endblock %}
+{% block og_title %}{{ og_title|default:"Available Plots for Sale - Prime Lands Ltd" }}{% endblock %}
+{% block og_description %}{{ og_description|default:"Explore verified plots for sale in Kenya. Affordable land with guaranteed title deeds." }}{% endblock %}
+{% block twitter_title %}{{ og_title|default:"Available Plots for Sale - Prime Lands Ltd" }}{% endblock %}
+{% block twitter_description %}{{ og_description|default:"Explore verified plots for sale in Kenya with flexible payment plans." }}{% endblock %}
 
 {% block content %}
 <div class="pt-24 pb-12 px-4">

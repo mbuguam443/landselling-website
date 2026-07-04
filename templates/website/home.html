@@ -2,6 +2,28 @@
 {% load static %}
 {% load currency_filters %}
 
+{% block meta_description %}{{ meta_description|default:"Prime Lands Ltd - Kenya's trusted real estate company. Buy prime land with flexible installment plans, verified plots, and guaranteed title deeds." }}{% endblock %}
+{% block og_title %}{{ og_title|default:"Prime Lands Ltd - Buy Land in Kenya with Flexible Installments" }}{% endblock %}
+{% block og_description %}{{ og_description|default:"Discover prime land for sale in Kenya. Affordable plots with flexible payment plans and guaranteed title deeds." }}{% endblock %}
+{% block twitter_title %}{{ og_title|default:"Prime Lands Ltd - Buy Land in Kenya with Flexible Installments" }}{% endblock %}
+{% block twitter_description %}{{ og_description|default:"Discover prime land for sale in Kenya. Affordable plots with flexible payment plans and guaranteed title deeds." }}{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Prime Lands Ltd",
+    "url": "{{ request.scheme }}://{{ request.get_host }}",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "{{ request.scheme }}://{{ request.get_host }}/plots/?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+{% endblock %}
+
 {% block content %}
 {% include 'components/hero.html' %}
 {% include 'components/stats.html' %}

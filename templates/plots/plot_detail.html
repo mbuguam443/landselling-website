@@ -3,7 +3,15 @@
 {% load currency_filters %}
 {% load humanize %}
 
-{% block title %}Plot {{ plot.plot_number }} - {{ plot.project.name }}{% endblock %}
+{% block title %}Plot {{ plot.plot_number }} - {{ plot.project.name }} | Prime Lands Ltd{% endblock %}
+{% block meta_description %}{{ meta_description|default:"Plot details at Prime Lands Ltd" }}{% endblock %}
+{% block og_title %}{{ og_title|default:"Plot "|add:plot.plot_number|add:" - Prime Lands Ltd" }}{% endblock %}
+{% block og_description %}{{ og_description|default:"View plot details at Prime Lands Ltd" }}{% endblock %}
+{% block og_type %}{{ og_type|default:"website" }}{% endblock %}
+{% block og_image %}{{ og_image|default:'' }}{% endblock %}
+{% block twitter_title %}{{ og_title|default:"Plot "|add:plot.plot_number|add:" - Prime Lands Ltd" }}{% endblock %}
+{% block twitter_description %}{{ og_description|default:"View plot details at Prime Lands Ltd" }}{% endblock %}
+{% block twitter_image %}{{ og_image|default:'' }}{% endblock %}
 
 {% block content %}
 <div class="pt-24 pb-12 px-4">
@@ -256,4 +264,12 @@ function calcInstallment() {
 }
 calcInstallment();
 </script>
+{% endblock %}
+
+{% block structured_data %}
+{% if structured_data %}
+<script type="application/ld+json">
+{{ structured_data|safe }}
+</script>
+{% endif %}
 {% endblock %}

@@ -3,6 +3,11 @@
 {% load currency_filters %}
 
 {% block title %}About Us - Prime Lands Ltd{% endblock %}
+{% block meta_description %}{{ meta_description|default:"Learn about Prime Lands Ltd - Kenya's premier real estate company dedicated to making land ownership accessible." }}{% endblock %}
+{% block og_title %}{{ og_title|default:"About Us - Prime Lands Ltd" }}{% endblock %}
+{% block og_description %}{{ og_description|default:"Discover Prime Lands Ltd - your trusted partner in Kenyan real estate with years of experience." }}{% endblock %}
+{% block twitter_title %}{{ og_title|default:"About Us - Prime Lands Ltd" }}{% endblock %}
+{% block twitter_description %}{{ og_description|default:"Discover Prime Lands Ltd - your trusted partner in Kenyan real estate." }}{% endblock %}
 
 {% block content %}
 <div class="pt-24 pb-12 px-4">
