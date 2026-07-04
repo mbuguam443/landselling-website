@@ -39,6 +39,10 @@
             </div>
         </div>
         <div class="mt-6 flex gap-3">
+            <a href="{% url 'accounts:user_edit' user_obj.pk %}" class="btn-primary text-sm py-2">Edit User</a>
+            {% if user_obj.pk != request.user.pk %}
+            <a href="{% url 'accounts:user_delete' user_obj.pk %}" class="text-sm py-2 px-4 rounded-lg" style="background: rgba(255, 68, 68, 0.2); color: #ff4444; border: 1px solid rgba(255, 68, 68, 0.4);">Delete User</a>
+            {% endif %}
             <a href="{% url 'accounts:user_list' %}" class="btn-secondary text-sm py-2">Back to Users</a>
         </div>
     </div>

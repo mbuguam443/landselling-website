@@ -135,6 +135,39 @@ def user_detail(request, pk):
 
 
 @login_required
+@role_required(['super_admin', 'administrator'])
+def user_edit(request, pk):
+    from .models import User
+    from .forms import UserUpdateForm
+    user_obj = User.objects.get(pk=pk)
+    if request.method == 'POST':
+        form = UserUpdateForm(request.POST, instance=user_obj)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'User "{user_obj.username}" updated successfully.')
+            log_audit(request.user, 'User Updated', f'Updated user: {user_obj.username}')
+            return redirect('accounts:user_detail', pk=pk)
+    else:
+        form = UserUpdateForm(instance=user_obj)
+    return render(request, 'accounts/user_edit.html', {'form': form, 'user_obj': user_obj})
+
+
+@login_required
+@role_required(['super_admin', 'administrator'])
+def user_delete(request, pk):
+    from .models import User
+    user_obj = User.objects.get(pk=pk)
+    if request.method == 'POST':
+        username = user_obj.username
+        user_obj.is_active = False
+        user_obj.save()
+        messages.success(request, f'User "{username}" has been deactivated.')
+        log_audit(request.user, 'User Deleted', f'Deactivated user: {username}')
+        return redirect('accounts:user_list')
+    return render(request, 'accounts/user_delete.html', {'user_obj': user_obj})
+
+
+@login_required
 def password_change_view(request):
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)

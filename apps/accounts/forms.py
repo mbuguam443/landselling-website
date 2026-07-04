@@ -33,13 +33,14 @@ class RegistrationForm(UserCreationForm):
 class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'phone', 'is_active']
+        fields = ['username', 'email', 'first_name', 'last_name', 'phone', 'role', 'is_active']
         widgets = {
             'username': forms.TextInput(attrs={'class': 'input-field'}),
             'email': forms.EmailInput(attrs={'class': 'input-field'}),
             'first_name': forms.TextInput(attrs={'class': 'input-field'}),
             'last_name': forms.TextInput(attrs={'class': 'input-field'}),
             'phone': forms.TextInput(attrs={'class': 'input-field'}),
+            'role': forms.Select(attrs={'class': 'input-field'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
         }
 

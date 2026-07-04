@@ -1,0 +1,23 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block page_title %}Deactivate User - {{ user_obj.username }}{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto">
+    <div class="glassmorphism rounded-xl p-8" style="border-color: #ff4444;">
+        <h2 class="text-2xl font-bold text-white mb-4">Deactivate User</h2>
+        <p class="mb-6" style="color: #b0b0d0;">Are you sure you want to deactivate <strong class="text-white">{{ user_obj.get_full_name|default:user_obj.username }}</strong>?</p>
+        <div class="p-4 rounded-lg mb-6" style="background: rgba(255, 68, 68, 0.1); border: 1px solid rgba(255, 68, 68, 0.3);">
+            <p class="text-sm" style="color: #ff4444;">This user will no longer be able to log in. You can reactivate them later by editing their profile.</p>
+        </div>
+        <div class="flex gap-3">
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200" style="background: rgba(255, 68, 68, 0.2); color: #ff4444; border: 1px solid rgba(255, 68, 68, 0.4);">Deactivate User</button>
+            </form>
+            <a href="{% url 'accounts:user_detail' user_obj.pk %}" class="btn-secondary py-2">Cancel</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
