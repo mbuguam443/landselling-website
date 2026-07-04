@@ -43,7 +43,12 @@
                         {% endif %}
                     </td>
                     <td class="py-3">
-                        <a href="{% url 'payments:payment_receipt' payment.id %}" class="text-sm" style="color: #00ffff;">Receipt</a>
+                        <div class="flex gap-2">
+                            {% if payment.status in 'pending' and payment.payment_method == 'mpesa' %}
+                            <a href="{% url 'payments:staff_mpesa_query' payment.id %}" class="text-sm" style="color: #ff00ff;">Check Payment</a>
+                            {% endif %}
+                            <a href="{% url 'payments:payment_receipt' payment.id %}" class="text-sm" style="color: #00ffff;">Receipt</a>
+                        </div>
                     </td>
                 </tr>
                 {% empty %}

@@ -530,7 +530,7 @@ def mpesa_poll_status(request):
 
 @login_required
 def staff_mpesa_query(request, pk):
-    """Staff-only view to query M-Pesa status for any pending payment."""
+    """Staff-only view to query M-Pesa status for pending/failed payments."""
     if not (request.user.is_staff_or_above() or request.user.is_superuser):
         messages.error(request, 'Access denied.')
         return redirect('dashboard:home')
@@ -540,8 +540,8 @@ def staff_mpesa_query(request, pk):
 
     payment = get_object_or_404(Payment, pk=pk)
 
-    if payment.status != 'pending':
-        messages.info(request, 'This payment is not pending.')
+    if payment.status not in ('pending', 'failed'):
+        messages.info(request, 'This payment cannot be rechecked.')
         return redirect('payments:payment_detail', pk=payment.pk)
 
     if payment.payment_method != 'mpesa':
@@ -559,7 +559,7 @@ def staff_mpesa_query(request, pk):
         return redirect('payments:payment_detail', pk=payment.pk)
 
     response_data = query_stk_status(mpesa_txn.checkout_request_id)
-    result_code = response_data.get('ResultCode', '1')
+    result_code = str(response_data.get('ResultCode', '1'))
 
     if result_code == '0':
         from .services import process_payment
@@ -578,12 +578,13 @@ def staff_mpesa_query(request, pk):
 
         payment.transaction_code = receipt
         payment.mpesa_code = receipt
+        payment.status = 'pending'
         payment.save()
 
         process_payment(payment, confirmed_by=request.user)
         messages.success(request, f'Payment confirmed via M-Pesa query! Receipt: {receipt}')
     else:
         desc = response_data.get('ResultDesc', 'Transaction not found or still pending')
-        messages.warning(request, f'M-Pesa query returned: {desc}')
+        messages.warning(request, f'M-Pesa query: {desc}')
 
     return redirect('payments:payment_detail', pk=payment.pk)

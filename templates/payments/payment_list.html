@@ -50,6 +50,12 @@
                     </td>
                     <td class="py-3">
                         <div class="flex gap-2">
+                            {% if payment.status == 'pending' and payment.payment_method == 'mpesa' %}
+                            <a href="{% url 'payments:staff_mpesa_query' payment.id %}" class="text-sm" style="color: #ff00ff;">Check Payment</a>
+                            {% endif %}
+                            {% if payment.status == 'failed' and payment.payment_method == 'mpesa' %}
+                            <a href="{% url 'payments:staff_mpesa_query' payment.id %}" class="text-sm" style="color: #ff00ff;">Recheck</a>
+                            {% endif %}
                             {% if payment.status == 'pending' %}
                             <a href="{% url 'payments:payment_confirm' payment.id %}" class="text-sm" style="color: #00ff99;">Confirm</a>
                             {% endif %}
