@@ -442,7 +442,7 @@ def mpesa_callback(request):
 
 @login_required
 def mpesa_poll_status(request):
-    """JSON endpoint for JS polling — queries Safaricom if still pending."""
+    """JSON endpoint for JS polling — checks DB first, queries Safaricom periodically."""
     payment_id = request.session.get('mpesa_payment_id')
     if not payment_id:
         return JsonResponse({'status': 'no_payment'})
@@ -462,14 +462,27 @@ def mpesa_poll_status(request):
     if payment.status == 'failed':
         return JsonResponse({'status': 'failed', 'payment_id': payment.pk})
 
-    if payment.status == 'pending':
-        checkout_id = request.session.get('mpesa_checkout_id')
-        if checkout_id:
-            from .mpesa import query_stk_status
-            from .models import MpesaTransaction
-            from .services import process_payment
+    if payment.status != 'pending':
+        return JsonResponse({
+            'status': payment.status,
+            'payment_id': payment.pk,
+        })
+
+    checkout_id = request.session.get('mpesa_checkout_id')
+    if not checkout_id:
+        return JsonResponse({'status': 'pending'})
+
+    poll_count = request.session.get('mpesa_poll_count', 0)
+    request.session['mpesa_poll_count'] = poll_count + 1
+
+    if poll_count % 5 == 0:
+        from .mpesa import query_stk_status
+        from .models import MpesaTransaction
+        from .services import process_payment
+
+        try:
             response_data = query_stk_status(checkout_id)
-            result_code = response_data.get('ResultCode', '1')
+            result_code = str(response_data.get('ResultCode', '1'))
 
             if result_code == '0':
                 try:
@@ -491,6 +504,7 @@ def mpesa_poll_status(request):
                     process_payment(payment)
                     request.session.pop('mpesa_payment_id', None)
                     request.session.pop('mpesa_checkout_id', None)
+                    request.session.pop('mpesa_poll_count', None)
                     return JsonResponse({
                         'status': 'confirmed',
                         'payment_id': payment.pk,
@@ -498,11 +512,19 @@ def mpesa_poll_status(request):
                     })
                 except MpesaTransaction.DoesNotExist:
                     pass
+            elif 'ResultCode' in response_data and result_code != '0':
+                desc = response_data.get('ResultDesc', '')
+                if 'does not exist' in desc.lower() or 'expired' in desc.lower():
+                    payment.status = 'failed'
+                    payment.save()
+                    return JsonResponse({'status': 'failed', 'payment_id': payment.pk})
+        except Exception:
+            pass
 
     return JsonResponse({
-        'status': payment.status,
+        'status': 'pending',
         'payment_id': payment.pk,
-        'redirect_url': reverse('payments:payment_detail', args=[payment.pk]),
+        'poll_count': request.session.get('mpesa_poll_count', 0),
     })
 
 

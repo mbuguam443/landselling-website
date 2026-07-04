@@ -75,49 +75,48 @@
 {% if not simulated %}
 <script>
 (function() {
-    var maxAttempts = 20;
+    var maxAttempts = 60;
     var attempts = 0;
     var pollInterval = setInterval(function() {
         attempts++;
         if (attempts >= maxAttempts) {
             clearInterval(pollInterval);
             var statusEl = document.getElementById('auto-status');
-            statusEl.textContent = 'Payment check timed out. Please check your phone for the STK push or try again.';
+            statusEl.textContent = 'Timed out. Click "Query M-Pesa Status" or "Manual Complete" below.';
             statusEl.style.color = '#ff0000';
             return;
         }
         fetch('{% url 'payments:mpesa_poll_status' %}')
             .then(function(response) {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
+                if (!response.ok) throw new Error('Network error');
                 return response.json();
             })
             .then(function(data) {
                 var statusEl = document.getElementById('auto-status');
-                if (data.status === 'completed' || data.status === 'confirmed') {
+                if (data.status === 'confirmed') {
                     statusEl.textContent = 'Payment confirmed! Redirecting...';
                     statusEl.style.color = '#00ff99';
                     clearInterval(pollInterval);
                     setTimeout(function() { window.location.href = data.redirect_url; }, 800);
                 } else if (data.status === 'failed') {
                     statusEl.textContent = 'Payment failed or cancelled.';
-                    statusEl.style.color = '#ff00ff';
+                    statusEl.style.color = '#ff1744';
                     clearInterval(pollInterval);
                 } else if (data.status === 'pending') {
-                    var dots = (attempts % 3); // 0,1,2 then repeat
-                    statusEl.textContent = 'Listening for confirmation' + '.'.repeat(dots + 1);
+                    var dots = '.'.repeat((attempts % 3) + 1);
+                    var checked = data.poll_count || 0;
+                    if (checked > 0 && checked % 5 === 0) {
+                        statusEl.textContent = 'Checked with M-Pesa' + dots + ' (attempt ' + checked + ')';
+                    } else {
+                        statusEl.textContent = 'Listening for confirmation' + dots;
+                    }
                 }
             })
             .catch(function(err) {
-                console.error('Error:', err);
-                var statusEl = document.getElementById('auto-status');
-                statusEl.textContent = 'Error checking payment status. Retrying...';
-                statusEl.style.color = '#ffa500';
+                console.error('Poll error:', err);
             });
     }, 3000);
 
-    // Clean up on page unload
     window.addEventListener('beforeunload', function() {
         clearInterval(pollInterval);
     });
