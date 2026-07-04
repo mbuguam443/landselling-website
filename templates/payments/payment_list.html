@@ -37,7 +37,7 @@
                     <td class="py-3" style="color: #94a3b8;">{{ payment.customer.name }}</td>
                     <td class="py-3" style="color: #00ff99;">KSh {{ payment.amount|currency }}</td>
                     <td class="py-3" style="color: #94a3b8;">{{ payment.get_payment_method_display }}</td>
-                    <td class="py-3" style="color: #00ffff;">{% if payment.mpesa_code %}{{ payment.mpesa_code }}{% else %}-{% endif %}</td>
+                    <td class="py-3" style="color: #00ffff;">{% if payment.payment_method == 'mpesa' %}{% if payment.mpesa_code %}{{ payment.mpesa_code }}{% elif payment.transaction_code %}{{ payment.transaction_code }}{% else %}-{% endif %}{% else %}-{% endif %}</td>
                     <td class="py-3" style="color: #94a3b8;">{{ payment.payment_date }}</td>
                     <td class="py-3">
                         {% if payment.status == 'confirmed' %}

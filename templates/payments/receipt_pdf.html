@@ -72,8 +72,8 @@
         <tr><td class="label">Customer</td><td class="value">{{ payment.customer.name }}</td></tr>
         <tr><td class="label">Plot No.</td><td class="value">{{ payment.sale.plot.plot_number }} — {{ payment.sale.plot.project.name }}</td></tr>
         <tr><td class="label">Payment Method</td><td class="value">{{ payment.get_payment_method_display|upper }}</td></tr>
-        {% if payment.mpesa_code %}
-        <tr><td class="label">M-Pesa Code</td><td class="value" style="color: #00a651; font-size: 12px;">{{ payment.mpesa_code }}</td></tr>
+        {% if payment.mpesa_code or payment.transaction_code %}
+        <tr><td class="label">M-Pesa Code</td><td class="value" style="color: #00a651; font-size: 12px;">{% if payment.mpesa_code %}{{ payment.mpesa_code }}{% else %}{{ payment.transaction_code }}{% endif %}</td></tr>
         {% endif %}
         {% if payment.mpesa_phone %}
         <tr><td class="label">M-Pesa Phone</td><td class="value">{{ payment.mpesa_phone }}</td></tr>
