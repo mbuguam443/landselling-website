@@ -442,20 +442,68 @@ def mpesa_callback(request):
 
 @login_required
 def mpesa_poll_status(request):
-    """JSON endpoint for JS polling — returns payment status."""
+    """JSON endpoint for JS polling — queries Safaricom if still pending."""
     payment_id = request.session.get('mpesa_payment_id')
     if not payment_id:
         return JsonResponse({'status': 'no_payment'})
 
     try:
         payment = Payment.objects.get(pk=payment_id, customer__user=request.user)
+    except Payment.DoesNotExist:
+        return JsonResponse({'status': 'not_found'})
+
+    if payment.status in ('completed', 'confirmed'):
         return JsonResponse({
-            'status': payment.status,
+            'status': 'confirmed',
             'payment_id': payment.pk,
             'redirect_url': reverse('payments:payment_detail', args=[payment.pk]),
         })
-    except Payment.DoesNotExist:
-        return JsonResponse({'status': 'not_found'})
+
+    if payment.status == 'failed':
+        return JsonResponse({'status': 'failed', 'payment_id': payment.pk})
+
+    if payment.status == 'pending':
+        checkout_id = request.session.get('mpesa_checkout_id')
+        if checkout_id:
+            from .mpesa import query_stk_status
+            from .models import MpesaTransaction
+            from .services import process_payment
+            response_data = query_stk_status(checkout_id)
+            result_code = response_data.get('ResultCode', '1')
+
+            if result_code == '0':
+                try:
+                    mpesa_txn = MpesaTransaction.objects.get(payment=payment)
+                    receipt = response_data.get('Receipt', '') or response_data.get('MpesaReceiptNumber', '')
+                    if not receipt:
+                        receipt = 'QRY' + timezone.now().strftime('%y%m%d%H%M%S')
+                    mpesa_txn.result_code = result_code
+                    mpesa_txn.result_description = response_data.get('ResultDesc', 'Success')
+                    mpesa_txn.mpesa_receipt_number = receipt
+                    mpesa_txn.transaction_date = timezone.now()
+                    mpesa_txn.raw_callback_data = response_data
+                    mpesa_txn.status = 'success'
+                    mpesa_txn.save()
+                    payment.transaction_code = receipt
+                    payment.mpesa_code = receipt
+                    payment.status = 'pending'
+                    payment.save()
+                    process_payment(payment)
+                    request.session.pop('mpesa_payment_id', None)
+                    request.session.pop('mpesa_checkout_id', None)
+                    return JsonResponse({
+                        'status': 'confirmed',
+                        'payment_id': payment.pk,
+                        'redirect_url': reverse('payments:payment_detail', args=[payment.pk]),
+                    })
+                except MpesaTransaction.DoesNotExist:
+                    pass
+
+    return JsonResponse({
+        'status': payment.status,
+        'payment_id': payment.pk,
+        'redirect_url': reverse('payments:payment_detail', args=[payment.pk]),
+    })
 
 
 @login_required
