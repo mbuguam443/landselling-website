@@ -3,20 +3,26 @@ from django.db.models import Q
 
 
 def sort_queryset(queryset, request, default_sort='-created_at', allowed_fields=None):
-    sort_field = request.GET.get('sort', default_sort)
-    order = request.GET.get('order', 'asc')
-    if sort_field.startswith('-'):
-        sort_field_clean = sort_field[1:]
-    else:
-        sort_field_clean = sort_field
-    if allowed_fields and sort_field_clean not in allowed_fields:
+    sort_field = request.GET.get('sort', '')
+    order = request.GET.get('order', '')
+    if not sort_field:
         sort_field = default_sort
-        sort_field_clean = default_sort.lstrip('-')
-    if order == 'desc':
-        if not sort_field.startswith('-'):
-            sort_field = f'-{sort_field}'
+        sort_field_clean = sort_field.lstrip('-')
     else:
-        sort_field = sort_field_clean
+        if sort_field.startswith('-'):
+            sort_field_clean = sort_field[1:]
+        else:
+            sort_field_clean = sort_field
+        if allowed_fields and sort_field_clean not in allowed_fields:
+            sort_field = default_sort
+            sort_field_clean = default_sort.lstrip('-')
+        if not order:
+            order = 'desc' if sort_field.startswith('-') else 'asc'
+        if order == 'desc':
+            if not sort_field.startswith('-'):
+                sort_field = f'-{sort_field}'
+        else:
+            sort_field = sort_field_clean
     return queryset.order_by(sort_field), sort_field_clean, order
 
 

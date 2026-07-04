@@ -4,7 +4,7 @@ def unread_notifications(request):
     if request.user.is_authenticated:
         from .models import Notification
         ctx['unread_count'] = Notification.objects.filter(recipient=request.user, is_read=False).count()
-        ctx['recent_notifications'] = Notification.objects.filter(recipient=request.user)[:5]
+        ctx['recent_notifications'] = Notification.objects.filter(recipient=request.user).order_by('-created_at')[:5]
         if request.user.is_staff_or_above() or request.user.is_superuser:
             from apps.customers.models import Customer
             ctx['pending_verification_count'] = Customer.objects.filter(is_verified=False).count()
