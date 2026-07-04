@@ -24,5 +24,10 @@ urlpatterns = [
     path('landImage/<str:filename>', serve_land_image, name='serve_land_image'),
 ]
 
-# Serve media files via Django (works in both dev and production)
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Serve media files in production (DEBUG=False)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+else:
+    urlpatterns += [
+        re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    ]
