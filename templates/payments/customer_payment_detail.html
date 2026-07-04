@@ -25,6 +25,18 @@
                 <span style="color: #4a4a6a;">Payment Method</span>
                 <span class="text-white">{{ payment.get_payment_method_display }}</span>
             </div>
+            {% if payment.mpesa_code %}
+            <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                <span style="color: #4a4a6a;">M-Pesa Code</span>
+                <span class="font-semibold" style="color: #00ffff;">{{ payment.mpesa_code }}</span>
+            </div>
+            {% endif %}
+            {% if payment.mpesa_phone %}
+            <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                <span style="color: #4a4a6a;">M-Pesa Phone</span>
+                <span class="text-white">{{ payment.mpesa_phone }}</span>
+            </div>
+            {% endif %}
             <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
                 <span style="color: #4a4a6a;">Status</span>
                 {% if payment.status == 'confirmed' %}

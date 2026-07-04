@@ -37,6 +37,18 @@
                 <span class="text-white">{{ payment.transaction_code }}</span>
             </div>
             {% endif %}
+            {% if payment.mpesa_code %}
+            <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                <span style="color: #4a4a6a;">M-Pesa Code</span>
+                <span class="font-semibold" style="color: #00ffff;">{{ payment.mpesa_code }}</span>
+            </div>
+            {% endif %}
+            {% if payment.mpesa_phone %}
+            <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                <span style="color: #4a4a6a;">M-Pesa Phone</span>
+                <span class="text-white">{{ payment.mpesa_phone }}</span>
+            </div>
+            {% endif %}
             <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
                 <span style="color: #4a4a6a;">Payment Date</span>
                 <span class="text-white">{{ payment.payment_date }}</span>
