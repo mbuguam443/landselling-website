@@ -10,6 +10,7 @@ class Notification(models.Model):
         ('sale', 'Sale'),
         ('system', 'System'),
         ('support', 'Support'),
+        ('customer', 'Customer'),
     ]
 
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')

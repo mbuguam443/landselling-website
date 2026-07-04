@@ -34,10 +34,12 @@ def register_view(request):
             user = form.save()
             if user.role == 'customer':
                 from apps.customers.models import Customer
-                Customer.objects.get_or_create(
+                customer, _ = Customer.objects.get_or_create(
                     user=user,
                     defaults={'phone': user.phone or ''}
                 )
+                from apps.notifications.services import notify_staff_new_customer
+                notify_staff_new_customer(customer.name, customer.pk)
             log_audit(user, 'create', model_name='User', object_id=user.id,
                       object_repr=user.username, description='Account registered', request=request)
             login(request, user)

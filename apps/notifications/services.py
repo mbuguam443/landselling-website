@@ -74,3 +74,16 @@ def notify_reminder(user, message):
         title='Reminder',
         message=message,
     )
+
+
+def notify_staff_new_customer(customer_name, customer_id):
+    from apps.accounts.models import User
+    staff_users = User.objects.exclude(role='customer')
+    for staff in staff_users:
+        create_notification(
+            recipient=staff,
+            notification_type='customer',
+            title='New Customer Registered',
+            message=f'{customer_name} has registered on the platform.',
+            link=f'/customers/{customer_id}/',
+        )
