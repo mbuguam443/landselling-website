@@ -25,7 +25,7 @@
                     <th class="pb-3 font-semibold text-white"><a href="?sort=amount&order={% if sort_field == 'amount' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Amount {% if sort_field == 'amount' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
                     <th class="pb-3 font-semibold text-white"><a href="?sort=payment_method&order={% if sort_field == 'payment_method' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Method {% if sort_field == 'payment_method' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
                     <th class="pb-3 font-semibold text-white">M-Pesa Code</th>
-                    <th class="pb-3 font-semibold text-white"><a href="?sort=payment_date&order={% if sort_field == 'payment_date' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Date {% if sort_field == 'payment_date' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
+                    <th class="pb-3 font-semibold text-white"><a href="?sort=created_at&order={% if sort_field == 'created_at' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Date {% if sort_field == 'created_at' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
                     <th class="pb-3 font-semibold text-white"><a href="?sort=status&order={% if sort_field == 'status' and sort_order == 'asc' %}desc{% else %}asc{% endif %}{% if search %}&search={{ search }}{% endif %}" class="text-white hover:text-primary transition">Status {% if sort_field == 'status' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}</a></th>
                     <th class="pb-3 font-semibold text-white">Actions</th>
                 </tr>
@@ -38,7 +38,7 @@
                     <td class="py-3" style="color: #00ff99;">KSh {{ payment.amount|currency }}</td>
                     <td class="py-3" style="color: #94a3b8;">{{ payment.get_payment_method_display }}</td>
                     <td class="py-3" style="color: #00ffff;">{% if payment.payment_method == 'mpesa' %}{% if payment.mpesa_code %}{{ payment.mpesa_code }}{% elif payment.transaction_code %}{{ payment.transaction_code }}{% else %}-{% endif %}{% else %}-{% endif %}</td>
-                    <td class="py-3" style="color: #94a3b8;">{{ payment.payment_date }}</td>
+                    <td class="py-3" style="color: #94a3b8;">{{ payment.created_at|date:"M d, Y H:i" }}</td>
                     <td class="py-3">
                         {% if payment.status == 'confirmed' %}
                         <span style="color: #00ff99;">Confirmed</span>

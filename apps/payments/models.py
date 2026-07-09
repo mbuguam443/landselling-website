@@ -38,7 +38,7 @@ class Payment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-payment_date', '-created_at']
+        ordering = ['-created_at', '-payment_date']
 
     def __str__(self):
         return f"{self.receipt_number} - {self.amount}"

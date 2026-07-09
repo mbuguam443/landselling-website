@@ -15,8 +15,8 @@ def document_list(request):
     else:
         documents = Document.objects.filter(customer__user=request.user).select_related('uploaded_by')
         template = 'documents/customer_document_list.html'
-    ctx = get_sortable_context(request, documents, default_sort='-uploaded_at',
-                               allowed_fields=['title', 'document_type', 'status', 'uploaded_at'],
+    ctx = get_sortable_context(request, documents, default_sort='-created_at',
+                               allowed_fields=['title', 'document_type', 'status', 'created_at'],
                                search_fields=['title', 'document_type', 'customer__name'],
                                per_page=15)
     ctx['is_staff'] = request.user.is_staff_or_above() or request.user.is_superuser

@@ -109,7 +109,8 @@ def stk_push(phone_number, amount, account_ref, transaction_desc='Land Payment')
             headers={
                 'Authorization': f'Bearer {token}',
                 'Content-Type': 'application/json',
-            }
+            },
+            timeout=30,
         )
         return response.json()
     except Exception as e:

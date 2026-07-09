@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-ndm=@ie_a+l=g#2t%p1d#h3gi3etn6gt@)0spt_es@88398x!7')
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() == 'true'
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
-CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'https://9cc3-102-205-50-218.ngrok-free.app,https://*.onrender.com').split(',')
+CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'https://73c6-41-90-178-53.ngrok-free.app,https://*.onrender.com').split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',

@@ -33,7 +33,7 @@ def project_detail(request, slug):
     template = 'projects/admin_project_detail.html' if request.user.is_authenticated and request.user.is_staff_or_above() else 'projects/project_detail.html'
     return render(request, template, {
         'project': project,
-        'meta_description': f'{project.name} - {project.location}. {project.description|truncatewords:30 if project.description else f"{project.total_plots} plots available"}. View available plots at Prime Lands Ltd.',
+        'meta_description': f'{project.name} - {project.location}. {(project.description[:120] + "...") if project.description else f"{project.total_plots} plots available"}. View available plots at Prime Lands Ltd.',
         'og_title': f'{project.name} - Prime Lands Ltd',
         'og_description': f'{project.name} in {project.location}. {project.total_plots} plots available. Browse plots with flexible installment plans.',
         'og_type': 'product',

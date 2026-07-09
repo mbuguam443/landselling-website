@@ -25,7 +25,7 @@
 
         <div>
             <label class="block text-sm font-medium text-gray-400 mb-1">Select Plot / Sale</label>
-            <select name="sale_id" required class="input-field w-full">
+            <select name="sale_id" id="sale_id" required class="input-field w-full">
                 <option value="">-- Select --</option>
                 {% for sale in active_sales %}
                 <option value="{{ sale.id }}">
@@ -42,7 +42,7 @@
 
         <div>
             <label class="block text-sm font-medium text-gray-400 mb-1">M-Pesa Phone Number</label>
-            <input type="tel" name="phone" required class="input-field w-full" placeholder="e.g. 0712345678" value="{{ customer.phone }}">
+            <input type="tel" name="phone" id="phone" required class="input-field w-full" placeholder="e.g. 0712345678" value="{{ customer.phone }}">
             <p class="text-xs text-gray-500 mt-1">Format: 0712345678 or 254712345678</p>
         </div>
 

@@ -12,13 +12,13 @@ from .forms import PaymentForm
 def payment_list(request):
     from apps.core.utils import get_sortable_context
     if request.user.is_staff_or_above() or request.user.is_superuser:
-        payments_list = Payment.objects.select_related('sale__plot', 'customer__user', 'confirmed_by').all()
+        payments_list = Payment.objects.select_related('sale__plot', 'customer__user', 'confirmed_by').all().order_by('-created_at')
         template = 'payments/payment_list.html'
     else:
         payments_list = Payment.objects.filter(customer__user=request.user).select_related('sale__plot', 'confirmed_by')
         template = 'payments/customer_payment_list.html'
-    ctx = get_sortable_context(request, payments_list, default_sort='-payment_date',
-                               allowed_fields=['receipt_number', 'amount', 'status', 'payment_date', 'payment_method'],
+    ctx = get_sortable_context(request, payments_list, default_sort='-created_at',
+                               allowed_fields=['receipt_number', 'amount', 'status', 'payment_date', 'payment_method', 'created_at'],
                                search_fields=['receipt_number', 'customer__name', 'payment_method', 'status'],
                                per_page=15)
     ctx['is_staff'] = request.user.is_staff_or_above() or request.user.is_superuser
@@ -259,6 +259,88 @@ def mpesa_payment(request):
 
 
 @login_required
+@require_POST
+def mpesa_stk_push_ajax(request):
+    """AJAX endpoint: initiates STK push and returns JSON."""
+    from .models import MpesaTransaction
+    from .mpesa import stk_push
+    from decimal import Decimal
+
+    try:
+        try:
+            customer = Customer.objects.get(user=request.user)
+        except Customer.DoesNotExist:
+            return JsonResponse({'ok': False, 'error': 'No customer profile found.'}, status=400)
+
+        sale_id = request.POST.get('sale_id')
+        amount = request.POST.get('amount')
+        phone = request.POST.get('phone')
+
+        if not sale_id or not amount or not phone:
+            return JsonResponse({'ok': False, 'error': 'All fields are required.'}, status=400)
+
+        try:
+            amount = float(amount)
+            if amount <= 0:
+                raise ValueError
+        except (ValueError, TypeError):
+            return JsonResponse({'ok': False, 'error': 'Invalid amount.'}, status=400)
+
+        try:
+            sale = Sale.objects.get(pk=sale_id, customer=customer)
+        except Sale.DoesNotExist:
+            return JsonResponse({'ok': False, 'error': 'Sale not found.'}, status=400)
+
+        if amount > float(sale.balance):
+            return JsonResponse({'ok': False, 'error': f'Amount exceeds balance of KSh {sale.balance:,.0f}.'}, status=400)
+
+        payment = Payment.objects.create(
+            sale=sale,
+            customer=customer,
+            amount=Decimal(str(amount)),
+            payment_method='mpesa',
+            mpesa_phone=phone,
+            payment_date=timezone.now().date(),
+            status='pending',
+        )
+
+        account_ref = f'PLOT{sale.plot.plot_number}'[:12]
+        response_data = stk_push(phone, int(round(amount)), account_ref)
+
+        MpesaTransaction.objects.create(
+            payment=payment,
+            transaction_type='stk_push',
+            merchant_request_id=response_data.get('MerchantRequestID', ''),
+            checkout_request_id=response_data.get('CheckoutRequestID', ''),
+            response_code=response_data.get('ResponseCode', '1'),
+            response_description=response_data.get('ResponseDescription', ''),
+            phone_number=phone,
+            amount=Decimal(str(amount)),
+            status='pending' if response_data.get('ResponseCode') == '0' else 'failed',
+        )
+
+        if response_data.get('ResponseCode') != '0':
+            payment.status = 'failed'
+            payment.save()
+            return JsonResponse({'ok': False, 'error': f'M-Pesa request failed: {response_data.get("ResponseDescription", "Unknown error")}'})
+
+        request.session['mpesa_checkout_id'] = response_data.get('CheckoutRequestID')
+        request.session['mpesa_payment_id'] = payment.pk
+
+        return JsonResponse({
+            'ok': True,
+            'payment_id': payment.pk,
+            'checkout_id': response_data.get('CheckoutRequestID'),
+            'simulated': response_data.get('_simulated', False),
+        })
+
+    except Exception as e:
+        import logging
+        logging.error(f'mpesa_stk_push_ajax error: {e}', exc_info=True)
+        return JsonResponse({'ok': False, 'error': 'An unexpected error occurred. Please try again.'}, status=500)
+
+
+@login_required
 def mpesa_complete(request):
     payment_id = request.session.pop('mpesa_payment_id', None)
     checkout_id = request.session.pop('mpesa_checkout_id', None)
@@ -306,27 +388,34 @@ def mpesa_complete(request):
                 }
             }
 
-        items = {i['Name']: i['Value'] for i in body.get('CallbackMetadata', {}).get('Item', [])}
+        callback_metadata = body.get('CallbackMetadata') or {}
+        items = {i['Name']: i['Value'] for i in callback_metadata.get('Item', []) if isinstance(i, dict)}
 
         mpesa_txn.transaction_type = 'callback'
-        mpesa_txn.result_code = body['ResultCode']
+        mpesa_txn.result_code = str(body['ResultCode'])
         mpesa_txn.result_description = body['ResultDesc']
         mpesa_txn.mpesa_receipt_number = items.get('MpesaReceiptNumber', '')
         mpesa_txn.transaction_date = timezone.now()
         mpesa_txn.raw_callback_data = response_data if not is_simulation else callback_data
-        mpesa_txn.status = 'success' if body['ResultCode'] == '0' else 'failed'
+        mpesa_txn.status = 'success' if str(body['ResultCode']) == '0' else 'failed'
         mpesa_txn.save()
 
-        if body['ResultCode'] == '0':
+        if str(body['ResultCode']) == '0':
             payment.transaction_code = items.get('MpesaReceiptNumber', '')
             payment.mpesa_code = items.get('MpesaReceiptNumber', '')
+            payment.status = 'confirmed'
+            payment.confirmed_at = timezone.now()
             payment.save()
             process_payment(payment)
             messages.success(request, f'Payment of KSh {payment.amount:,.0f} confirmed successfully!')
         else:
-            payment.status = 'failed'
-            payment.save()
-            messages.error(request, f'M-Pesa payment failed: {body["ResultDesc"]}')
+            desc = body.get('ResultDesc', '').lower()
+            if any(w in desc for w in ['cancelled', 'expired', 'invalid']):
+                payment.status = 'failed'
+                payment.save()
+                messages.error(request, f'M-Pesa payment failed: {body["ResultDesc"]}')
+            else:
+                messages.warning(request, f'Could not confirm payment status. The callback may still process it. Query result: {body.get("ResultDesc", "Unknown")}')
 
     except Exception as e:
         messages.error(request, f'Error processing callback: {e}')
@@ -358,7 +447,7 @@ def mpesa_query_status(request):
         return redirect('payments:payment_detail', pk=payment.pk)
 
     response_data = query_stk_status(checkout_id)
-    result_code = response_data.get('ResultCode', '1')
+    result_code = str(response_data.get('ResultCode', '1'))
 
     if result_code == '0':
         from .services import process_payment
@@ -382,7 +471,8 @@ def mpesa_query_status(request):
 
         payment.transaction_code = receipt
         payment.mpesa_code = receipt
-        payment.status = 'pending'
+        payment.status = 'confirmed'
+        payment.confirmed_at = timezone.now()
         payment.save()
 
         process_payment(payment)
@@ -411,7 +501,7 @@ def mpesa_callback(request):
 
     body = data.get('Body', {}).get('stkCallback', {})
     checkout_id = body.get('CheckoutRequestID', '')
-    result_code = body.get('ResultCode', '1')
+    result_code = str(body.get('ResultCode', '1'))
     result_desc = body.get('ResultDesc', '')
 
     try:
@@ -419,7 +509,14 @@ def mpesa_callback(request):
     except MpesaTransaction.DoesNotExist:
         return HttpResponse('Transaction not found', status=404)
 
-    items = {i['Name']: i['Value'] for i in body.get('CallbackMetadata', {}).get('Item', [])}
+    callback_metadata = body.get('CallbackMetadata') or {}
+    items = {i['Name']: i['Value'] for i in callback_metadata.get('Item', []) if isinstance(i, dict)}
+
+    import logging
+    cb_log = logging.getLogger('mpesa_callback')
+    cb_log.error(f'CALLBACK RECEIVED: checkout_id={checkout_id}, result_code={result_code}, result_desc={result_desc}')
+    cb_log.error(f'CALLBACK items={items}')
+    cb_log.error(f'CALLBACK raw={data}')
 
     mpesa_txn.transaction_type = 'callback'
     mpesa_txn.result_code = result_code
@@ -431,6 +528,7 @@ def mpesa_callback(request):
     mpesa_txn.save()
 
     payment = mpesa_txn.payment
+    cb_log.error(f'CALLBACK payment={payment}, payment.status={payment.status if payment else "None"}, result_code={result_code}')
     if payment and result_code == '0':
         receipt = items.get('MpesaReceiptNumber', '')
         payment.transaction_code = receipt
@@ -438,12 +536,15 @@ def mpesa_callback(request):
         payment.status = 'confirmed'
         payment.confirmed_at = timezone.now()
         payment.save()
+        cb_log.error(f'CALLBACK payment saved as confirmed, calling process_payment')
 
         try:
             process_payment(payment)
+            cb_log.error(f'CALLBACK process_payment SUCCESS')
         except Exception as e:
-            import logging
-            logging.error(f'process_payment callback error for payment #{payment.pk}: {e}')
+            cb_log.error(f'CALLBACK process_payment FAILED: {e}', exc_info=True)
+    else:
+        cb_log.error(f'CALLBACK SKIPPING confirmation: payment={payment}, result_code={result_code}')
 
     return HttpResponse('{"ResultCode":0,"ResultDesc":"Success"}', content_type='application/json')
 
@@ -507,7 +608,8 @@ def mpesa_poll_status(request):
                     mpesa_txn.save()
                     payment.transaction_code = receipt
                     payment.mpesa_code = receipt
-                    payment.status = 'pending'
+                    payment.status = 'confirmed'
+                    payment.confirmed_at = timezone.now()
                     payment.save()
                     process_payment(payment)
                     request.session.pop('mpesa_payment_id', None)
@@ -586,7 +688,8 @@ def staff_mpesa_query(request, pk):
 
         payment.transaction_code = receipt
         payment.mpesa_code = receipt
-        payment.status = 'pending'
+        payment.status = 'confirmed'
+        payment.confirmed_at = timezone.now()
         payment.save()
 
         process_payment(payment, confirmed_by=request.user)

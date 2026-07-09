@@ -51,7 +51,17 @@
             {% endif %}
             <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
                 <span style="color: #4a4a6a;">Payment Date</span>
-                <span class="text-white">{{ payment.payment_date }}</span>
+                <span class="text-white">{{ payment.payment_date|date:"M d, Y" }}</span>
+            </div>
+            {% if payment.confirmed_at %}
+            <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                <span style="color: #4a4a6a;">Confirmed At</span>
+                <span class="text-white">{{ payment.confirmed_at|date:"M d, Y H:i" }}</span>
+            </div>
+            {% endif %}
+            <div class="flex justify-between py-2 border-b" style="border-color: #2a1a4a;">
+                <span style="color: #4a4a6a;">Created</span>
+                <span class="text-white">{{ payment.created_at|date:"M d, Y H:i" }}</span>
             </div>
             <div class="flex justify-between py-2">
                 <span style="color: #4a4a6a;">Sale</span>

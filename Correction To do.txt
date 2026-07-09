@@ -2,3 +2,7 @@
 2)customer verification should come during purchase of land
 3)images under available plot not there on render
 4)
+-----------------------------------------------
+1) When i click documents it show 500 error
+2)mpesa not show it is successful in the system
+3)Time when payment happened

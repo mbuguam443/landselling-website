@@ -15,5 +15,6 @@ urlpatterns = [
     path('mpesa/query-status/', views.mpesa_query_status, name='mpesa_query_status'),
     path('mpesa/query-status/<int:pk>/', views.staff_mpesa_query, name='staff_mpesa_query'),
     path('mpesa/poll-status/', views.mpesa_poll_status, name='mpesa_poll_status'),
+    path('mpesa/stk-push/', views.mpesa_stk_push_ajax, name='mpesa_stk_push_ajax'),
     path('mpesa/callback/', views.mpesa_callback, name='mpesa_callback'),
 ]
