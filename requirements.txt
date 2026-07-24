@@ -11,4 +11,4 @@ gunicorn
 whitenoise
 psycopg2-binary
 django-cors-headers
-mysqlclient
+pymysql
