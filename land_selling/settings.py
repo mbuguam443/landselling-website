@@ -5,8 +5,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-ndm=@ie_a+l=g#2t%p1d#h3gi3etn6gt@)0spt_es@88398x!7')
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() == 'true'
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
-CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'https://73c6-41-90-178-53.ngrok-free.app,https://*.onrender.com').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'prime-lands.schones-heim-builders.co.ke,localhost,127.0.0.1').split(',')
+CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'https://prime-lands.schones-heim-builders.co.ke,http://localhost:8000').split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -82,8 +82,15 @@ WSGI_APPLICATION = 'land_selling.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('DB_NAME', 'land_selling'),
+        'USER': os.environ.get('DB_USER', 'root'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '3306'),
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        },
     }
 }
 
@@ -132,4 +139,4 @@ MPESA_CONSUMER_KEY = os.environ.get('MPESA_CONSUMER_KEY', '0GPg2z14A6LmnOAEMmFUJ
 MPESA_CONSUMER_SECRET = os.environ.get('MPESA_CONSUMER_SECRET', 'D5XAaxpsX6D830m3imcl165raamoralJZk4bh3dcRAzxN52Glc70iH29OMGvOzVu')
 MPESA_PASSKEY = os.environ.get('MPESA_PASSKEY', 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919')
 MPESA_SHORTCODE = os.environ.get('MPESA_SHORTCODE', '174379')
-MPESA_CALLBACK_URL = os.environ.get('MPESA_CALLBACK_URL', 'https://086d-102-205-50-218.ngrok-free.app/payments/mpesa/callback/')
+MPESA_CALLBACK_URL = os.environ.get('MPESA_CALLBACK_URL', 'https://prime-lands.schones-heim-builders.co.ke/payments/mpesa/callback/')
